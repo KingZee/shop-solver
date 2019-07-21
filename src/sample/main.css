@@ -1,0 +1,118 @@
+/* MODIFY BASE COMPONENT CLASSES */
+.titled-pane > .title
+{
+    -fx-background-color: rgba(120,180,195,0.4);
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.titled-pane
+{
+    -fx-text-fill: #fff1d3;
+}
+
+.titled-pane > .title > .arrow-button .arrow
+{
+-fx-background-color: #fff1d3;
+}
+
+.text-input {
+    -fx-text-inner-color: #fff1d3;
+}
+
+/* Styling the slider track */
+.jfx-slider > .track {
+     -fx-background-color: #fff1d3;
+}
+
+/* Styling the slider thumb */
+.jfx-slider > .thumb {
+     -fx-background-color: #4f5b62;
+}
+
+/* Styling the filled track */
+.jfx-slider > .colored-track {
+     -fx-background-color: #4f5b62;
+}
+
+/* Styling the animated thumb */
+.jfx-slider > .animated-thumb {
+     -fx-background-color: #4f5b62;
+}
+
+/* Styling the slider value text inside animated thumb */
+.jfx-slider .slider-value {
+     -fx-fill: #fff1d3;
+     -fx-stroke: #fff1d3;
+}
+
+/* DEFINE NEW CLASSES HERE */
+
+.copyright {
+    -fx-padding : 0;
+    -fx-margin : 0;
+}
+
+.system-bar {
+    -fx-background-color: rgba(255,241,211,0.8);
+    -fx-background-radius: 8 8 0 0;
+}
+
+.system-bar > .button
+{
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+    -fx-cursor: hand;
+    -fx-background-radius: 25;
+    -fx-background-insets: 3px;
+    -fx-opacity: 1;
+}
+
+.system-bar > .label
+{
+    /*-fx-background-color :  #ff00ff;*/
+    -fx-background-radius: 8 0 0 0;
+    -fx-opacity: 0.8;
+}
+
+.menu {
+    -fx-border-style: hidden hidden hidden solid;
+    -fx-border-width: 2;
+    -fx-border-color: rgba(255,241,211,0.8);
+}
+
+.arrow-button {
+    -fx-shape: "M 27 15 3 27 3 3 z";
+    -fx-padding : 0;
+}
+
+.matrix-input {
+    -fx-text-inner-color:  #263238;
+    -fx-background-insets: 5px;
+    -fx-alignment : center;
+}
+
+.matrix-label {
+    -fx-text-inner-color:  #263238;
+    -fx-font-size : 14px;
+    -fx-background-insets: 5px;
+    -fx-alignment : center;
+}
+
+.matrix-button {
+    -fx-background-radius: 30;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+    -fx-cursor: hand;
+    -fx-background-insets: 3px;
+    -fx-alignment : center;
+}
+
+.machine-button {
+    -fx-background-color:  #fff1d3;
+    -fx-cursor: hand;
+    -fx-background-insets: 3px;
+    -fx-alignment : center;
+}
