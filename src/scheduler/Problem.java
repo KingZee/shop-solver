@@ -1,4 +1,4 @@
-package sample;
+package scheduler;
 
 import java.awt.*;
 import java.util.Random;
@@ -14,13 +14,13 @@ public class Problem {      //Class representing an instance of the optimization
     private int machineMatrix[][];  //Matrix of precedence constraints (damn you jobshop)
     private ShopType type;          //Type of the optimization problem
 
-    public Problem(){
+    public Problem() {
         timeMatrix = new int[0][0];
         machineMatrix = new int[0][0];
         type = ShopType.FLOW;
     }
 
-    public Problem(int jobs, int machines){ //Empty constructor
+    public Problem(int jobs, int machines) { //Empty constructor
         jobCount = jobs;
         machineCount = machines;
         timeMatrix = new int[jobs][machines];
@@ -28,17 +28,17 @@ public class Problem {      //Class representing an instance of the optimization
         type = ShopType.FLOW;
     }
 
-    public Problem(int jobs, int machines, ShopType type, Point timeInterval, double zeroChance){
+    public Problem(int jobs, int machines, ShopType type, Point timeInterval, double zeroChance) {
         int[][] outTime = new int[jobs][machines];
         int[][] outMx = new int[jobs][machines];
-        for(int j=0;j<jobs;j++){
-            for(int m=0;m<machines;m++){
+        for (int j = 0; j < jobs; j++) {
+            for (int m = 0; m < machines; m++) {
                 double time = Math.random();
                 time = time < zeroChance ? 0 : (time - zeroChance) * (timeInterval.y - timeInterval.x) / (1 - zeroChance) + timeInterval.x;
-                outTime[j][m] = (int)Math.round(time);
+                outTime[j][m] = (int) Math.round(time);
             }
-            if(type == ShopType.JOB){  //Only Job Shop has need for precedence constraints
-                outMx[j] = shuffleArray(IntStream.rangeClosed(0, machines-1).toArray());
+            if (type == ShopType.JOB) {  //Only Job Shop has need for precedence constraints
+                outMx[j] = shuffleArray(IntStream.rangeClosed(0, machines - 1).toArray());
             }
         }
 
@@ -49,12 +49,12 @@ public class Problem {      //Class representing an instance of the optimization
         this.machineMatrix = type == ShopType.JOB ? outMx : null;
     }
 
-    public Problem(int[][]time, int[][] machine, ShopType type){
+    public Problem(int[][] time, int[][] machine, ShopType type) {
         jobCount = time.length;
         machineCount = time[0].length;
-        timeMatrix=time;
-        machineMatrix=machine;
-        this.type=type;
+        timeMatrix = time;
+        machineMatrix = machine;
+        this.type = type;
     }
 
     public int[][] getTimeMatrix() {
@@ -69,22 +69,26 @@ public class Problem {      //Class representing an instance of the optimization
         return type;
     }
 
-    public void changeType(ShopType type){
+    public void changeType(ShopType type) {
         this.type = type;
     }
 
-    public void updateType(ShopType type){
+    public void updateType(ShopType type) {
         this.type = type;
-        if(type != ShopType.JOB) { machineMatrix = null; return; }
-        for(int j=0;j<jobCount;j++) machineMatrix[j] = shuffleArray(IntStream.rangeClosed(0, machineCount-1).toArray());
+        if (type != ShopType.JOB) {
+            machineMatrix = null;
+            return;
+        }
+        for (int j = 0; j < jobCount; j++)
+            machineMatrix[j] = shuffleArray(IntStream.rangeClosed(0, machineCount - 1).toArray());
     }
 
-    public void updateTime(int rowIndex, int colIndex, int value){
+    public void updateTime(int rowIndex, int colIndex, int value) {
         timeMatrix[rowIndex][colIndex] = value;
     }
 
-    public void updateMachine(int rowIndex, int colIndex, int value){
-        if(value>machineCount) throw new ArrayIndexOutOfBoundsException();
+    public void updateMachine(int rowIndex, int colIndex, int value) {
+        if (value > machineCount) throw new ArrayIndexOutOfBoundsException();
         machineMatrix[rowIndex][colIndex] = value;
     }
 
@@ -92,8 +96,7 @@ public class Problem {      //Class representing an instance of the optimization
     public static int[] shuffleArray(int[] ar) {
         // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
-        for (int i = ar.length - 1; i > 0; i--)
-        {
+        for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
             int a = ar[index];

@@ -1,4 +1,4 @@
-package sample;
+package scheduler;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,18 +13,18 @@ import javafx.stage.StageStyle;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
-        Scene scene = new Scene(root,screen.getWidth()/1.35,screen.getHeight()/1.25);
+        Scene scene = new Scene(root, screen.getWidth() / 1.35, screen.getHeight() / 1.25);
         scene.setFill(Color.TRANSPARENT);
 
         //primaryStage.setTitle("Hello World");
 
-        primaryStage.setY(screen.getHeight()*0.11);
-        primaryStage.setX(screen.getWidth()*0.18);
+        primaryStage.setY(screen.getHeight() * 0.11);
+        primaryStage.setX(screen.getWidth() * 0.18);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

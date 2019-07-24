@@ -1,10 +1,9 @@
-package sample;
+package scheduler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public enum ShopType
-{
+public enum ShopType {
     OPEN("Open Shop"),
     JOB("Job Shop"),
     FLOW("Flow Shop");
@@ -14,22 +13,18 @@ public enum ShopType
     private static final Map<String, ShopType> vals = new LinkedHashMap<>();
 
     //Populate the lookup table on loading time
-    static
-    {
-        for(ShopType shop : ShopType.values())
-        {
+    static {
+        for (ShopType shop : ShopType.values()) {
             vals.put(shop.getName(), shop);
         }
     }
 
-    public ShopType next()
-    {
-        return (ShopType)vals.values().toArray()[(this.ordinal()+1) % vals.size()];
+    public ShopType next() {
+        return (ShopType) vals.values().toArray()[(this.ordinal() + 1) % vals.size()];
     }
 
-    public ShopType prev()
-    {
-        return (ShopType)vals.values().toArray()[((this.ordinal()-1)+vals.size()) % vals.size()];
+    public ShopType prev() {
+        return (ShopType) vals.values().toArray()[((this.ordinal() - 1) + vals.size()) % vals.size()];
     }
 
     ShopType(String n) {
@@ -40,8 +35,7 @@ public enum ShopType
         return name;
     }
 
-    public static ShopType getByName(String n)
-    {
+    public static ShopType getByName(String n) {
         return vals.get(n);
     }
 
