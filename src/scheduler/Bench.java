@@ -1,4 +1,4 @@
-package sample;
+package scheduler;
 
 import com.google.common.collect.Lists;
 import org.openjdk.jmh.annotations.*;
@@ -19,25 +19,25 @@ public class Bench {
     public static void main(String[] args) throws Exception {
         //org.openjdk.jmh.Main.main(args);
 
-        ArrayList<int[]>[] sample = new ArrayList[6];
-        sample[0] = new ArrayList<>(Solver.permute(new int[]{1, 2, 3, 4,5},5));
-        //sample[0] = new ArrayList<>(Arrays.asList(new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6},new int[]{7}));
-        //sample[0] = new ArrayList<>(Solver.permute(new int[]{9,8,5,10,11},5));
-        //sample[1] = new ArrayList<>(Arrays.asList(new int[]{4},new int[]{5},new int[]{6},new int[]{4}));
-        sample[1] = new ArrayList<>(Solver.permute(new int[]{1,0,2,3},4));
-        sample[2] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
-        //sample[2] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{9},new int[]{5}));
-        //sample[3] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{10}));
-        sample[3] = new ArrayList<>(Solver.permute(new int[]{5,6,7,9,5},5));
-        sample[4] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9}));
-        sample[5] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8}));
-        //sample[4] = new ArrayList<>(Solver.permute(new int[]{1,2,3},3));
+        ArrayList<int[]>[] scheduler = new ArrayList[6];
+        scheduler[0] = new ArrayList<>(Solver.permute(new int[]{1, 2, 3, 4,5},5));
+        //scheduler[0] = new ArrayList<>(Arrays.asList(new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6},new int[]{7}));
+        //scheduler[0] = new ArrayList<>(Solver.permute(new int[]{9,8,5,10,11},5));
+        //scheduler[1] = new ArrayList<>(Arrays.asList(new int[]{4},new int[]{5},new int[]{6},new int[]{4}));
+        scheduler[1] = new ArrayList<>(Solver.permute(new int[]{1,0,2,3},4));
+        scheduler[2] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
+        //scheduler[2] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{9},new int[]{5}));
+        //scheduler[3] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{10}));
+        scheduler[3] = new ArrayList<>(Solver.permute(new int[]{5,6,7,9,5},5));
+        scheduler[4] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9}));
+        scheduler[5] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8}));
+        //scheduler[4] = new ArrayList<>(Solver.permute(new int[]{1,2,3},3));
 
         long startTime, endTime, duration = 0;
 
         startTime = System.nanoTime();
 
-        List<List<int[]>> out = Lists.cartesianProduct(Arrays.asList(sample));
+        List<List<int[]>> out = Lists.cartesianProduct(Arrays.asList(scheduler));
 
         endTime = System.nanoTime();
         duration = endTime-startTime;
@@ -47,7 +47,7 @@ public class Bench {
 
         startTime = System.nanoTime();
 
-        ArrayList<ArrayList<int[]>> out1 =findCombinations(sample);
+        ArrayList<ArrayList<int[]>> out1 =findCombinations(scheduler);
 
         endTime = System.nanoTime();
         duration = endTime-startTime;
@@ -57,7 +57,7 @@ public class Bench {
 
         startTime = System.nanoTime();
 
-        ArrayList<ArrayList<int[]>> out2 = combine(sample);
+        ArrayList<ArrayList<int[]>> out2 = combine(scheduler);
 
         endTime = System.nanoTime();
         duration = endTime-startTime;
@@ -70,22 +70,22 @@ public class Bench {
 
     @Setup
     public void setup() {
-        ArrayList<int[]>[] sample = new ArrayList[8];
-        //sample[0] = new ArrayList<>(Solver.permute(new int[]{1, 2, 3, 4,5,6,7},7));
-        //sample[0] = new ArrayList<>(Arrays.asList(new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6},new int[]{7}));
-        sample[0] = new ArrayList<>(Solver.permute(new int[]{9,8,5,10,11},5));
-        //sample[1] = new ArrayList<>(Arrays.asList(new int[]{4},new int[]{5},new int[]{6},new int[]{4}));
-        sample[1] = new ArrayList<>(Solver.permute(new int[]{1,0,2,3,4},5));
-        sample[2] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
-        //sample[2] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{9},new int[]{5}));
-        //sample[3] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{10}));
-        //sample[4] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{4},new int[]{4}));
-        sample[3] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
-        sample[4] = new ArrayList<>(Solver.permute(new int[]{1,1,1},3));
-        sample[5] = new ArrayList<>(Solver.permute(new int[]{1,2},2));
-        sample[6] = new ArrayList<>(Solver.permute(new int[]{1,2},2));
-        sample[7] = new ArrayList<>(Solver.permute(new int[]{1,2,3},2));
-        benchInput = sample;
+        ArrayList<int[]>[] scheduler = new ArrayList[8];
+        //scheduler[0] = new ArrayList<>(Solver.permute(new int[]{1, 2, 3, 4,5,6,7},7));
+        //scheduler[0] = new ArrayList<>(Arrays.asList(new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6},new int[]{7}));
+        scheduler[0] = new ArrayList<>(Solver.permute(new int[]{9,8,5,10,11},5));
+        //scheduler[1] = new ArrayList<>(Arrays.asList(new int[]{4},new int[]{5},new int[]{6},new int[]{4}));
+        scheduler[1] = new ArrayList<>(Solver.permute(new int[]{1,0,2,3,4},5));
+        scheduler[2] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
+        //scheduler[2] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{9},new int[]{5}));
+        //scheduler[3] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{10}));
+        //scheduler[4] = new ArrayList<>(Arrays.asList(new int[]{7},new int[]{8},new int[]{9},new int[]{4},new int[]{4}));
+        scheduler[3] = new ArrayList<>(Solver.permute(new int[]{5,6,7},3));
+        scheduler[4] = new ArrayList<>(Solver.permute(new int[]{1,1,1},3));
+        scheduler[5] = new ArrayList<>(Solver.permute(new int[]{1,2},2));
+        scheduler[6] = new ArrayList<>(Solver.permute(new int[]{1,2},2));
+        scheduler[7] = new ArrayList<>(Solver.permute(new int[]{1,2,3},2));
+        benchInput = scheduler;
     }
 */
     @Benchmark

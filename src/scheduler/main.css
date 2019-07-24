@@ -116,3 +116,34 @@
     -fx-background-insets: 3px;
     -fx-alignment : center;
 }
+
+.job-1 {
+    -fx-background-color:#bb4430;
+}
+.job-2 {
+    -fx-background-color:#a8c686;
+}
+.job-3 {
+    -fx-background-color:#151e3f;
+}
+.job-4 {
+    -fx-background-color:#f7b538;
+}
+.job-5 {
+    -fx-background-color:#ac7b84;
+}
+.job-6 {
+    -fx-background-color:#231f20;
+}
+.job-7 {
+    -fx-background-color:#f4e3b7;
+}
+.job-8 {
+    -fx-background-color:#317b22;
+}
+.job-9 {
+    -fx-background-color:#7ebdc2;
+}
+.job-10 {
+    -fx-background-color:#bf48a1;
+}
