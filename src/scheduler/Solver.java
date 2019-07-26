@@ -1,9 +1,11 @@
 package scheduler;
 
+import javafx.concurrent.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Solver {
+public abstract class Solver extends Service<List<List<MachineMap>>> {
 
     class JobData {
         private int totalSchedules;
@@ -149,14 +151,6 @@ public abstract class Solver {
             }
         }
         return new JobData(best, worst, avg, bestSchedule, worstSchedule, totalSchedules);
-    }
-
-    public static int[] convertIntegers(List<Integer> integers) {
-        int[] ret = new int[integers.size()];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = integers.get(i);
-        }
-        return ret;
     }
 
 }
