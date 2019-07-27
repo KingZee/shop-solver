@@ -87,6 +87,14 @@
     -fx-padding : 0;
 }
 
+.calculate-button {
+    -fx-background-color: #a5cce1;
+}
+
+.processing {
+    -fx-background-color: #FF6666;
+}
+
 .matrix-input {
     -fx-text-inner-color:  #263238;
     -fx-background-insets: 5px;

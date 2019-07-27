@@ -1,13 +1,14 @@
 package scheduler;
 
 import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Solver extends Service<List<List<MachineMap>>> {
 
-    class JobData {
+    static class JobData {
         private int totalSchedules;
         private int bestTime;
         private int worstTime;
@@ -66,7 +67,18 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
         this.problem = problem;
     }
 
-    public abstract List<List<MachineMap>> solveMakespan(); //Solving for minimum makespan, override in child class
+    @Override
+    public Task<List<List<MachineMap>>> createTask() {
+        return new Task<List<List<MachineMap>>>() {
+            @Override
+            protected List<List<MachineMap>> call() throws Exception {
+                List<List<MachineMap>> result = solveMakespan();
+                return result;
+            }
+        };
+    }
+
+    protected abstract List<List<MachineMap>> solveMakespan(); //Solving for minimum makespan, override in child class
     // A "MachineMap" is a structure that maps job operations for a single machine
     //A list of n "MachineMap"s will constitute a full schedule for n jobs
     // and a list of that structure to store the full set of all possible schedules
@@ -126,7 +138,7 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
     }
 
     //Parse schedules into relevant statistics
-    public JobData parseSchedules(List<List<MachineMap>> schedules) {
+    public static JobData parseSchedules(List<List<MachineMap>> schedules) {
         final int totalSchedules = schedules.size();
         int worst = 0, best = Integer.MAX_VALUE;
         double avg = 0;

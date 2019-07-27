@@ -3,6 +3,8 @@
 <?import com.jfoenix.controls.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.*?>
@@ -187,20 +189,50 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <JFXButton fx:id="generateButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#generateMatrix" style="-fx-background-color: #fff1d3;" text="Generate Matrix" textFill="#263238" VBox.vgrow="ALWAYS">
+                  <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#generateMatrix" style="-fx-background-color: #ffecc2;" text="Generate Matrix" textFill="#263238" VBox.vgrow="ALWAYS">
                      <font>
                         <Font size="16.0" />
                      </font>
                      <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets bottom="10.0" top="10.0" />
                      </VBox.margin></JFXButton>
-                  <JFXButton fx:id="calculateButton" buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#solveMatrix" prefHeight="${menu.width * 0.5}" style="-fx-background-color: #a5cce1;" text="Calculate" textFill="#263238" VBox.vgrow="ALWAYS">
+                  <HBox>
+                     <children>
+                        <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#clearMatrix" style="-fx-background-color: #fff7e6;" text="Clear" textFill="#263238" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets right="4.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#resetMatrix" style="-fx-background-color: #fff7e6;" text="Reset" textFill="#263238" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="4.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
                      <VBox.margin>
-                        <Insets bottom="10.0" top="20.0" />
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <JFXButton fx:id="calculateButton" buttonType="RAISED" contentDisplay="TEXT_ONLY" maxWidth="1.7976931348623157E308" onAction="#solveMatrix" prefHeight="${menu.width * 0.5}" styleClass="calculate-button" text="Calculate" textFill="#263238" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                      <font>
                         <Font name="System Bold" size="18.0" />
-                     </font></JFXButton>
+                     </font>
+                     <graphic>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/loader.gif" />
+                           </image>
+                        </ImageView>
+                     </graphic></JFXButton>
                   <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" styleClass="copyright" text="© Zakkari Abdelhakim" textFill="#f4f4f4" />
                </children></VBox>
          </children></HBox>

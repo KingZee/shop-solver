@@ -16,7 +16,7 @@ public class ExactSolver extends Solver {
     }
 
     @Override
-    public List<List<MachineMap>> solveMakespan() {
+    protected List<List<MachineMap>> solveMakespan() {
 
         if (this.getProblem().machineCount == 0) {
             System.err.println("No matrix set");

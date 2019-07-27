@@ -4,7 +4,9 @@ import com.jfoenix.controls.JFXButton;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.FXCollections;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -58,16 +60,19 @@ public class Controller {
     private com.jfoenix.controls.JFXTextField leftInterval;
     @FXML
     private com.jfoenix.controls.JFXTextField rightInterval;
+    @FXML
+    private com.jfoenix.controls.JFXButton calculateButton;
 
     GridPane table = new GridPane();    //This will always be set after initialize()
     List<List<Node>> nodes = new ArrayList<>();  //Keep references to GridPane by indices
-    int rows = 3;                //Initial row/col length for matrix on load
-    int cols = 3;
+    final int initialRows =3,
+            initialColumns = 3;
+    int rows = initialRows;                //Initial row/col length for matrix on load
+    int cols = initialColumns;
     Problem problem = new Problem(rows - 1, cols - 1);        //The instance of the problem
 
     @FXML
     public void initialize() {
-
         //Reset value of shopType Input field
         shopType.setText(ShopType.FLOW.getName());
 
@@ -78,7 +83,10 @@ public class Controller {
                 break;
             }
         }
-        /*<>*/
+        initGrid();
+    }
+
+    private void initGrid(){
         //Add default machine / job rows
         table.addRow(0, matrixLabel("J/M"), matrixLabel("M1"), matrixLabel("M2"), matrixButton("columnButton", this::addColumn));
         table.getRowConstraints().add(0, defaultRowConst());
@@ -125,6 +133,29 @@ public class Controller {
         table.getRowConstraints().add(rows, defaultRowConst());
         rows++;
         generateMatrix();
+    }
+
+    @FXML
+    public void clearMatrix(){
+        for(List<Node> row : nodes){
+            for(Node cell : row){
+                for(Node content : ((VBox)cell).getChildren()){
+                    if(content instanceof TextField)
+                        ((TextField) content).setText("");
+                }
+            }
+        }
+    }
+
+    @FXML
+    public void resetMatrix(){
+
+        table.getChildren().clear();
+        rows = initialRows;
+        cols = initialColumns;
+        nodes.clear();
+
+        initGrid();
     }
 
     //region Styled Components
@@ -238,10 +269,38 @@ public class Controller {
     }
 
     @FXML
-    private void solveMatrix() {
+    private void solveMatrix(Event e) {
         ExactSolver solver = new ExactSolver(problem);
-        List<List<MachineMap>> schedule = solver.solveMakespan();
-        Solver.JobData data = solver.parseSchedules(schedule);
+        solver.createTask();
+        solver.setOnCancelled(this::onCancelled);
+        solver.setOnFailed(this::onFailed);
+        solver.setOnSucceeded(this::onSolved);
+        solver.setOnScheduled(this::onQueued);
+        solver.start();
+    }
+
+    //true = task pending in background, false = idle state
+    private void resetCalculateButton(){
+        calculateButton.textProperty().setValue("Calculate");
+        calculateButton.setContentDisplay(ContentDisplay.TEXT_ONLY);
+        calculateButton.getStyleClass().remove("processing");
+        calculateButton.setOnAction(this::solveMatrix);
+    }
+
+    private void onQueued(Event event){
+        calculateButton.setOnAction((e -> ((WorkerStateEvent)event).getSource().cancel()));
+        calculateButton.getStyleClass().add("processing");
+        calculateButton.textProperty().setValue("Cancel...");
+        calculateButton.setContentDisplay(ContentDisplay.BOTTOM);
+        System.out.println("Event running in background!");
+    }
+
+    private void onSolved(Event event){
+        resetCalculateButton();
+
+        WorkerStateEvent worker = (WorkerStateEvent)event;
+        List<List<MachineMap>> result = (List<List<MachineMap>>)worker.getSource().getValue();
+        Solver.JobData data = Solver.parseSchedules(result);
 
         List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem.getTimeMatrix());
 
@@ -267,17 +326,17 @@ public class Controller {
         VBox.setVgrow(chart, Priority.ALWAYS);
 
         List<Node> children = outputContainer.getChildren();
+
         if (children.get(0) instanceof JobChart) {
             children.set(0, chart);
             children.set(1, generateLegend());
-            ((TextFlow) children.get(2)).getChildren().clear();
         } else {
             children.add(0, chart);
             children.add(1, generateLegend());
-            ((TextFlow) children.get(2)).getChildren().remove(0);
         }
 
-        //TextFlow
+        //TextFlow to display statistics
+        ((TextFlow) children.get(2)).getChildren().clear();
         ((TextFlow) children.get(2)).getChildren().add(outputText("Schedules calculated : " + data.getTotalSchedules()));
         ((TextFlow) children.get(2)).getChildren().add(outputText(""));
         ((TextFlow) children.get(2)).getChildren().add(outputText("Best Time : " + data.getBestTime()));
@@ -288,6 +347,17 @@ public class Controller {
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
     }
 
+    private void onFailed(Event event){
+        resetCalculateButton();
+        System.out.println("Event failed!");
+    }
+
+    private void onCancelled(Event event){
+        resetCalculateButton();
+        System.out.println("Event canceled!");
+    }
+
+    //Returns Chart Legend
     private HBox generateLegend() {
         HBox legend = new HBox();
         legend.setAlignment(Pos.CENTER);
@@ -342,7 +412,6 @@ public class Controller {
     }
 
     double initX = 0;
-
     @FXML
     private void setWindow() {
         Point mouse = MouseInfo.getPointerInfo().getLocation();
