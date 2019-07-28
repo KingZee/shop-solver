@@ -7,9 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jfoenix-8.0.8" level="project" />
     <orderEntry type="library" name="com.google.guava:guava:27.1-jre" level="project" />
     <orderEntry type="library" name="org.openjdk.jmh:jmh-core:1.21" level="project" />
     <orderEntry type="library" name="org.openjdk.jmh:jmh-generator-annprocess:1.21" level="project" />
+    <orderEntry type="library" name="com.jfoenix:jfoenix:8.0.8" level="project" />
   </component>
 </module>
