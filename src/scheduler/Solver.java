@@ -3,19 +3,20 @@ package scheduler;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Solver extends Service<List<List<MachineMap>>> {
+public abstract class Solver extends Service<List<Schedule>> {
 
     static class JobData {
         private int totalSchedules;
         private int bestTime;
         private int worstTime;
         private double avgTime;
-        private List<MachineMap> bestSchedule, worstSchedule;
+        private Schedule bestSchedule, worstSchedule;
 
-        JobData(int best, int worst, double avg, List<MachineMap> bestSchedule, List<MachineMap> worstSchedule, int totalSchedules) {
+        JobData(int best, int worst, double avg, Schedule bestSchedule, Schedule worstSchedule, int totalSchedules) {
             bestTime = best;
             worstTime = worst;
             avgTime = avg;
@@ -40,11 +41,11 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
             return totalSchedules;
         }
 
-        public List<MachineMap> getBestSchedule() {
+        public Schedule getBestSchedule() {
             return bestSchedule;
         }
 
-        public List<MachineMap> getWorstSchedule() {
+        public Schedule getWorstSchedule() {
             return worstSchedule;
         }
     }
@@ -68,31 +69,30 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
     }
 
     @Override
-    public Task<List<List<MachineMap>>> createTask() {
-        return new Task<List<List<MachineMap>>>() {
+    public Task<List<Schedule>> createTask() {
+        return new Task<List<Schedule>>() {
+
             @Override
-            protected List<List<MachineMap>> call() throws Exception {
-                List<List<MachineMap>> result = solveMakespan();
+            protected List<Schedule> call() throws Exception {
+                List<Schedule> result = solveMakespan(this);
                 return result;
             }
         };
     }
 
-    protected abstract List<List<MachineMap>> solveMakespan(); //Solving for minimum makespan, override in child class
-    // A "MachineMap" is a structure that maps job operations for a single machine
-    //A list of n "MachineMap"s will constitute a full schedule for n jobs
-    // and a list of that structure to store the full set of all possible schedules
+    protected abstract List<Schedule> solveMakespan(Task currentTask); //Solving for minimum makespan, override in child class
+    // A Schedule is an ordered map of jobs (ex. J1M1 J2M1 J1M2 J2M2...)
 
-    //Heap's algorithm to generate all permutations for a set
-    public static List<MachineMap> permute(MachineMap map, int n, List<MachineMap> out) {
+    //Heap's algorithm to generate all permutations for a Schedule
+    public static List<Schedule> permute(Schedule map, int n, List<Schedule> out) {
         if (n == 1) {
-            out.add(new MachineMap(map));
+            out.add(new Schedule(map));
             return out;
         } else {
             for (int i = 0; i < n; i++) {
                 permute(map, n - 1, out);
                 int j = (n % 2 == 0) ? i : 0;
-                int t = map.getIndices().get(n - 1);
+                Point t = map.getIndices().get(n - 1);
                 map.getIndices().set(n - 1, map.getIndices().get(j));
                 map.getIndices().set(j, t);
             }
@@ -100,10 +100,32 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
         }
     }
 
-    public static List<MachineMap> permute(MachineMap map, int n) {
+    public static List<Schedule> permute(Schedule map, int n) {
         return permute(map, n, new ArrayList<>());
     }
 
+/*    //Generate all permutations for a Schedule (List MachineMap)
+    public static List<List<MachineMap>> permute(List<MachineMap> schedule, int n, List<List<MachineMap>> out) {
+        if (n == 1) {
+            schedule.forEach((machineMap -> machineMap = new MachineMap(machineMap)));
+            out.add(new ArrayList<>(schedule));
+            return out;
+        } else {
+            for (int i = 0; i < n; i++) {
+                permute(schedule, n - 1, out);
+                int j = (n % 2 == 0) ? i : 0;
+                MachineMap t = schedule.get(n - 1);
+                schedule.set(n - 1, schedule.get(j));
+                schedule.set(j, t);
+            }
+            return out;
+        }
+    }
+
+    public static List<List<MachineMap>> permute(List<MachineMap> schedule, int n) {
+        return permute(schedule, n, new ArrayList<>());
+    }
+*/
     /*
     public static ArrayList<Point[]> permute(Point[] list, int n, ArrayList<Point[]> out) {
         if(n == 1) {
@@ -138,18 +160,14 @@ public abstract class Solver extends Service<List<List<MachineMap>>> {
     }
 
     //Parse schedules into relevant statistics
-    public static JobData parseSchedules(List<List<MachineMap>> schedules) {
+    public static JobData parseSchedules(List<Schedule> schedules) {
         final int totalSchedules = schedules.size();
         int worst = 0, best = Integer.MAX_VALUE;
         double avg = 0;
-        List<MachineMap> bestSchedule = new ArrayList<>();
-        List<MachineMap> worstSchedule = new ArrayList<>();
-        for (List<MachineMap> schedule : schedules) {
-            final MachineMap map = schedule.get(schedule.size() - 1);
-            int makespan = 0;
-            for (int i = 0; i < map.size(); i++) {
-                makespan = map.getByIndex(i) > makespan ? map.getByIndex(i) : makespan;
-            }
+        Schedule bestSchedule = null,
+                worstSchedule = null;
+        for (Schedule schedule : schedules) {
+            int makespan = schedule.getMaxValue();
             avg += (double) (makespan) / (double) schedules.size();
 
             if (makespan > worst) {

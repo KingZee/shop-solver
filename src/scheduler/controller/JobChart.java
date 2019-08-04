@@ -10,28 +10,30 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import scheduler.MachineMap;
+import scheduler.Schedule;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class JobChart<X, Y> extends XYChart<X, Y> {
 
-    public static List<Series<Number, String>> MapToChart(List<MachineMap> schedule, int[][] times) {  //List for end times & job indices
+    public static List<Series<Number, String>> MapToChart(Schedule schedule, int[][] times) {  //List for end times & job indices
         List<Series<Number, String>> chart = new ArrayList<>();                                       //Array for job processing times
-        for (int i = 0; i < schedule.size(); i++) {
+        for (int i = 0; i < times[0].length; i++) {
             Series<Number, String> machineSeries = new Series<>();
-            MachineMap machine = schedule.get(i);
-            for (int j = 0; j < machine.size(); j++) {
-                Node blockPane = new StackPane();
-                Data<Number, String> block = new Data<>();
-                block.setNode(blockPane);
-                block.setYValue("Machine " + (i + 1));                                              //Y value : machine
-                block.setXValue(machine.getByIndex(j) - times[machine.getIndices().get(j)][i]);   //X value : start time
-                block.setExtraValue(times[machine.getIndices().get(j)][i]);                     //Extra value : processing time
-                blockPane.getStyleClass().add("job-" + (machine.getIndices().get(j) + 1));
-                machineSeries.getData().add(block);
+            for (int j = 0; j < times.length; j++) {
+                if(times[j][i] !=0) {
+                    Node blockPane = new StackPane();
+                    Data<Number, String> block = new Data<>();
+                    block.setNode(blockPane);
+                    block.setYValue("Machine " + (i + 1));                                              //Y value : machine
+                    block.setXValue(schedule.get(new Point(j, i)) - times[j][i]);   //X value : start time
+                    block.setExtraValue(times[j][i]);                     //Extra value : processing time
+                    blockPane.getStyleClass().add("job-" + (j + 1));
+                    machineSeries.getData().add(block);
+                }
             }
             chart.add(machineSeries);
         }

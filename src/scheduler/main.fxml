@@ -19,8 +19,8 @@
                <font>
                   <Font size="14.0" />
                </font></Label>
-            <JFXButton fx:id="miniButton" alignment="CENTER_RIGHT" buttonType="RAISED" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#reduceWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('resources/min-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
-            <JFXButton fx:id="closeButton" alignment="CENTER_RIGHT" buttonType="RAISED" cancelButton="true" contentDisplay="CENTER" onAction="#closeWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('resources/close-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="miniButton" alignment="CENTER_RIGHT" buttonType="RAISED" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#reduceWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('assets/min-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="closeButton" alignment="CENTER_RIGHT" buttonType="RAISED" cancelButton="true" contentDisplay="CENTER" onAction="#closeWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('assets/close-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <HBox fx:id="main" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #263238;" VBox.vgrow="ALWAYS">
@@ -229,7 +229,7 @@
                      <graphic>
                         <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../resources/loader.gif" />
+                              <Image url="@../assets/loader.gif" />
                            </image>
                         </ImageView>
                      </graphic></JFXButton>

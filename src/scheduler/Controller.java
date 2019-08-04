@@ -186,7 +186,7 @@ public class Controller {
         btn.setId(id);
         btn.setOnAction(fnc);
         btn.setButtonType(JFXButton.ButtonType.RAISED);
-        btn.setStyle("-fx-background-image:  url('resources/add-icon.png');");
+        btn.setStyle("-fx-background-image:  url('assets/add-icon.png');");
         btn.getStyleClass().add("matrix-button");
         return btn;
     }
@@ -195,7 +195,7 @@ public class Controller {
         JFXButton btn = new JFXButton(val);
         btn.setOnAction(fnc);
         btn.setPrefSize(45, 45);
-        //btn.setStyle("-fx-background-image:  url('resources/add-icon.png');");
+        //btn.setStyle("-fx-background-image:  url('assets/add-icon.png');");
         btn.getStyleClass().add("machine-button");
         return btn;
     }
@@ -269,11 +269,17 @@ public class Controller {
     }
 
     @FXML
-    private void solveMatrix(Event e) {
+    private void solveMatrix(Event e){
         ExactSolver solver = new ExactSolver(problem);
         solver.createTask();
         solver.setOnCancelled(this::onCancelled);
-        solver.setOnFailed(this::onFailed);
+        solver.setOnFailed(ev -> {
+            try {
+                onFailed(ev);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
         solver.setOnSucceeded(this::onSolved);
         solver.setOnScheduled(this::onQueued);
         solver.start();
@@ -299,7 +305,7 @@ public class Controller {
         resetCalculateButton();
 
         WorkerStateEvent worker = (WorkerStateEvent)event;
-        List<List<MachineMap>> result = (List<List<MachineMap>>)worker.getSource().getValue();
+        List<Schedule> result = (List<Schedule>)worker.getSource().getValue();
         Solver.JobData data = Solver.parseSchedules(result);
 
         List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem.getTimeMatrix());
@@ -347,12 +353,17 @@ public class Controller {
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
     }
 
-    private void onFailed(Event event){
+    private void onFailed(Event event) throws Throwable{
+        WorkerStateEvent worker = (WorkerStateEvent)event;
         resetCalculateButton();
         System.out.println("Event failed!");
+
+        throw worker.getSource().getException();
     }
 
     private void onCancelled(Event event){
+        WorkerStateEvent worker = (WorkerStateEvent)event;
+        System.out.println(worker.getSource().getState());
         resetCalculateButton();
         System.out.println("Event canceled!");
     }
@@ -409,6 +420,7 @@ public class Controller {
         } else {
             shopType.setText(ShopType.getByName(shopType.getText()).next().getName());
         }
+        clearMatrix();
     }
 
     double initX = 0;

@@ -1,11 +1,13 @@
 package scheduler.solvers;
 
 import com.google.common.collect.Lists;
-import scheduler.MachineMap;
+import javafx.concurrent.Task;
 import scheduler.Problem;
+import scheduler.Schedule;
 import scheduler.ShopType;
 import scheduler.Solver;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,73 +18,90 @@ public class ExactSolver extends Solver {
     }
 
     @Override
-    protected List<List<MachineMap>> solveMakespan() {
+    protected List<Schedule> solveMakespan(Task currentTask) {
 
         if (this.getProblem().machineCount == 0) {
             System.err.println("No matrix set");
             return new ArrayList<>();
         }
 
-        List<List<MachineMap>> full = generateSolutions();
-
-        final List<List<MachineMap>> schedules = new ArrayList<>(); //To populate with final solution
-
-        if (getProblem().getType() == ShopType.FLOW) {
-
-            for (List<MachineMap> sch : full) {
-                List<MachineMap> newlist = new ArrayList<>();
-                for (int i = 0; i < sch.size(); i++) {
-                    MachineMap map = new MachineMap(sch.get(i));
-                    newlist.add(map);
-                    int finalI = i;
-                    map.forEach((index, time) -> {
-                        map.put(index, time + getPreviousTime(newlist, finalI, index));
-                    });
-                }
-                schedules.add(newlist);
-            }
-
-            return schedules;
-
-        } else {    //TODO add remaining job types
-            return new ArrayList<>();
-        }
-    }
-
-    //Generates all possible solutions for "this" problem
-    List<List<MachineMap>> generateSolutions() {
-        MachineMap[] baseMachines = new MachineMap[getProblem().machineCount];
         int[][] matrix = getProblem().getTimeMatrix();
 
-        for (int i = 0; i < baseMachines.length; i++) {
-            baseMachines[i] = new MachineMap();
-            for (int j = 0; j < matrix.length; j++) {
-                if (matrix[j][i] != 0) {
-                    baseMachines[i].put(j, matrix[j][i]);
+        final List<Schedule> schedules = new ArrayList<>(); //To populate with final solution
+
+        if (getProblem().getType() == ShopType.FLOW) {
+            Schedule[] baseMachines = new Schedule[getProblem().machineCount];
+
+            //Generate schedule per job
+            for (int i = 0; i < baseMachines.length; i++) {
+                baseMachines[i] = new Schedule();
+                for (int j = 0; j < matrix.length; j++) {
+                    if (matrix[j][i] != 0) {
+                        baseMachines[i].put(new Point(j,i), matrix[j][i]);
+                    }
                 }
             }
+
+            List<List<Schedule>> baseSchedule = new ArrayList<>();
+            //Permutations of each job's schedule
+            for (Schedule sch : baseMachines) {
+                baseSchedule.add(permute(sch, sch.size()));
+            }
+
+            //Cartesian array combination of schedules together
+            List<List<Schedule>> full = Lists.cartesianProduct(baseSchedule);    //4jobs x 8 machines, 7x3, 5x5
+
+            //Concatenate into final Schedules containing all jobs + machines
+            for(List<Schedule> sch : full){
+                schedules.add(Schedule.concat(sch));
+            }
+
+            //Calculate makespan
+            for (Schedule sch : schedules) {
+                sch.forEach((index, time) -> sch.put(index, time + getPreviousTime(sch, index.x, index.y)));
+            }
+
+        } else if (getProblem().getType() == ShopType.OPEN) {
+            Schedule baseSchedule = new Schedule();
+
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix[0].length; j++) {
+                    if (matrix[i][j] != 0) {
+                        baseSchedule.put(new Point(j,i), matrix[i][j]);
+                    }
+                }
+            }
+
+            System.out.println("guaranteed");
+
+            schedules.addAll(permute(baseSchedule,baseSchedule.size()));
+
+            //Calculate makespan
+            for (Schedule sch : schedules) {
+                //if(currentTask.isCancelled()) System.out.println("Wee woo we cancelled");
+                //System.out.println(schedules.indexOf(sch)+"/"+schedules.size());
+                sch.forEach((index, time) -> sch.put(index, time + getPreviousTime(sch, index.x, index.y)));
+            }
+
+        } else {
+
         }
 
-        List<List<MachineMap>> baseSchedule = new ArrayList<>();
-        //Permutations of pairs
-        for (MachineMap sch : baseMachines) {
-            baseSchedule.add(permute(sch, sch.size()));
-        }
+        System.out.println(schedules);
 
-        return Lists.cartesianProduct(baseSchedule);    //4jobs x 8 machines, 7x3, 5x5
+        return schedules;
+
     }
 
     //Get the worst end time for the previous task
-    private int getPreviousTime(List<MachineMap> schedule, int machineIndex, int jobIndex) {
-        Integer previousJob = schedule.get(machineIndex).getPreviousJob(jobIndex);
-        int previousJobTime = previousJob == null ? 0 : schedule.get(machineIndex).get(previousJob);
-        if (machineIndex == 0) {
-            return previousJobTime;
-        } else {
-            Integer precedentJobTime = MachineMap.getPrecedentJob(schedule, machineIndex, jobIndex);
-            if (precedentJobTime == null) return previousJobTime;
-            else return Math.max(precedentJobTime, previousJobTime);
-        }
+    private int getPreviousTime(Schedule schedule, int jobIndex, int machineIndex){
+        Integer precedent = schedule.get(schedule.getPrecedentJob(new Point(jobIndex,machineIndex)));
+        Integer previous = schedule.get(schedule.getPreviousJob(new Point(jobIndex,machineIndex)));
+
+        precedent = precedent == null ? 0 : precedent;
+        previous = previous == null ? 0 : previous;
+
+        return Math.max(precedent,previous);
     }
 
 }
