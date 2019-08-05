@@ -5,14 +5,28 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-public class Problem {      //Class representing an instance of the optimization problem
+/**
+ * Problem class contains all information about a scheduling problem instance
+ */
+public class Problem {
 
     public int jobCount = 0;
     public int machineCount = 0;
 
-    private int timeMatrix[][];     //Matrix of processing times
-    private int machineMatrix[][];  //Matrix of precedence constraints (damn you jobshop)
-    private ShopType type;          //Type of the optimization problem
+    /**
+     * The matrix of processing times
+     */
+    private int timeMatrix[][];
+    /**
+     * The matrix of precedence constraints (will only be automatically populated for job-shop)
+     */
+    private int machineMatrix[][];
+    /**
+     * Type of optimization problem
+     *
+     * @see ShopType
+     */
+    private ShopType type;
 
     public Problem() {
         timeMatrix = new int[0][0];
@@ -20,13 +34,40 @@ public class Problem {      //Class representing an instance of the optimization
         type = ShopType.FLOW;
     }
 
-    public Problem(int jobs, int machines) { //Empty constructor
+    public Problem(int[][] time, int[][] machine, ShopType type) {
+        jobCount = time.length;
+        machineCount = time[0].length;
+        timeMatrix = time;
+        machineMatrix = machine;
+        this.type = type;
+    }
+
+    /**
+     * Empty constructor with a specific size,
+     * to generate a full problem, use the other constructor
+     *
+     * @param jobs     size of jobs
+     * @param machines size of machines
+     * @see #Problem(int, int, ShopType, Point, double)
+     */
+    public Problem(int jobs, int machines) {
         jobCount = jobs;
         machineCount = machines;
         timeMatrix = new int[jobs][machines];
         machineMatrix = new int[jobs][machines];
         type = ShopType.FLOW;
     }
+
+    /**
+     * Constructor to generate a full scheduling problem
+     *
+     * @param jobs         size of jobs
+     * @param machines     size of machines
+     * @param type         Job type
+     * @param timeInterval Interval of processing times
+     * @param zeroChance   Chance of an operation to be empty
+     * @see ShopType
+     */
 
     public Problem(int jobs, int machines, ShopType type, Point timeInterval, double zeroChance) {
         int[][] outTime = new int[jobs][machines];
@@ -47,14 +88,6 @@ public class Problem {      //Class representing an instance of the optimization
         this.timeMatrix = outTime;
         this.type = type;
         this.machineMatrix = type == ShopType.JOB ? outMx : null;
-    }
-
-    public Problem(int[][] time, int[][] machine, ShopType type) {
-        jobCount = time.length;
-        machineCount = time[0].length;
-        timeMatrix = time;
-        machineMatrix = machine;
-        this.type = type;
     }
 
     public int[][] getTimeMatrix() {
@@ -83,9 +116,24 @@ public class Problem {      //Class representing an instance of the optimization
             machineMatrix[j] = shuffleArray(IntStream.rangeClosed(0, machineCount - 1).toArray());
     }
 
+    /**
+     * Update processing time of a specific operation
+     *
+     * @param rowIndex Job Index
+     * @param colIndex Machine Index
+     * @param value    New Processing time value
+     */
     public void updateTime(int rowIndex, int colIndex, int value) {
         timeMatrix[rowIndex][colIndex] = value;
     }
+
+    /**
+     * Update machine order matrix
+     *
+     * @param rowIndex Job Index
+     * @param colIndex Machine Index
+     * @param value    Order value
+     */
 
     public void updateMachine(int rowIndex, int colIndex, int value) {
         if (value > machineCount) throw new ArrayIndexOutOfBoundsException();
@@ -93,7 +141,7 @@ public class Problem {      //Class representing an instance of the optimization
     }
 
     // Implementing Fisher–Yates shuffle
-    public static int[] shuffleArray(int[] ar) {
+    private static int[] shuffleArray(int[] ar) {
         // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {

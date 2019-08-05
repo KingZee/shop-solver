@@ -7,8 +7,17 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract class to inherit from when creating a new Solver type
+ * It has helper functions to permute, combine, and parse schedules
+ * It inherits from Service to be able to solve the problem in the background
+ */
+
 public abstract class Solver extends Service<List<Schedule>> {
 
+    /**
+     * Local class to represent information about the current schedule
+     */
     static class JobData {
         private int totalSchedules;
         private int bestTime;
@@ -50,7 +59,12 @@ public abstract class Solver extends Service<List<Schedule>> {
         }
     }
 
-    Problem problem;        //Each solver can be instantiated with a problem or/and changed later
+    /**
+     * Each solver instance is always tied to a problem instance
+     * This can be set at instantiation or modified later
+     * @see Problem
+     */
+    Problem problem;
 
     public Solver() {
         problem = new Problem();
@@ -68,6 +82,11 @@ public abstract class Solver extends Service<List<Schedule>> {
         this.problem = problem;
     }
 
+    /**
+     * This creates the task that encapsulates the solver function
+     *
+     * @return task that will resolve with the solved problem if succeeded
+     */
     @Override
     public Task<List<Schedule>> createTask() {
         return new Task<List<Schedule>>() {
@@ -80,17 +99,27 @@ public abstract class Solver extends Service<List<Schedule>> {
         };
     }
 
-    protected abstract List<Schedule> solveMakespan(Task currentTask); //Solving for minimum makespan, override in child class
-    // A Schedule is an ordered map of jobs (ex. J1M1 J2M1 J1M2 J2M2...)
+    /**
+     * This is the main function used to solve problem instances
+     * It is abstract and only usable from children
+     * It is also Task-aware, and
+     *
+     * @param currentTask the current Task instantiated with this instance.
+     *                    Implementations of this function should listen to the isCancelled() event,
+     *                    to cancel computation if the task itself is cancelled.
+     * @return A List of Schedules, representing the solution space
+     * @see Schedule
+     */
+    protected abstract List<Schedule> solveMakespan(Task currentTask);
 
-    //Heap's algorithm to generate all permutations for a Schedule
-    public static List<Schedule> permute(Schedule map, int n, List<Schedule> out) {
+    private static List<Schedule> permute(Schedule map, int n, List<Schedule> out, Task currentTask) {
         if (n == 1) {
             out.add(new Schedule(map));
             return out;
         } else {
             for (int i = 0; i < n; i++) {
-                permute(map, n - 1, out);
+                if (currentTask.isCancelled()) return null;
+                permute(map, n - 1, out, currentTask);
                 int j = (n % 2 == 0) ? i : 0;
                 Point t = map.getIndices().get(n - 1);
                 map.getIndices().set(n - 1, map.getIndices().get(j));
@@ -100,8 +129,16 @@ public abstract class Solver extends Service<List<Schedule>> {
         }
     }
 
-    public static List<Schedule> permute(Schedule map, int n) {
-        return permute(map, n, new ArrayList<>());
+    /**
+     * Heap's algorithm to generate all permutations of a Schedule
+     *
+     * @param map         A single Schedule to generate permutations for
+     * @param n           Length of the Schedule
+     * @param currentTask This function is also task-aware
+     * @return List of permuted schedules
+     */
+    public static List<Schedule> permute(Schedule map, int n, Task currentTask) {
+        return permute(map, n, new ArrayList<>(), currentTask);
     }
 
 /*    //Generate all permutations for a Schedule (List MachineMap)
@@ -143,6 +180,12 @@ public abstract class Solver extends Service<List<Schedule>> {
         }
     }*/
 
+    /**
+     * Function to generate cartesian array combinations
+     *
+     * @param sets Set of arrays to combine
+     * @return Cartesian multiplication of arrays
+     */
     public static List<List<int[]>> combine(List<int[]>... sets) {
         int combinations = 1;
         List<List<int[]>> out = new ArrayList<>();
@@ -159,7 +202,13 @@ public abstract class Solver extends Service<List<Schedule>> {
         return out;
     }
 
-    //Parse schedules into relevant statistics
+    /**
+     * Parses a list of schedules, and returns relevant statistics
+     *
+     * @param schedules List of schedules (solution space)
+     * @return JobData structure
+     */
+
     public static JobData parseSchedules(List<Schedule> schedules) {
         final int totalSchedules = schedules.size();
         int worst = 0, best = Integer.MAX_VALUE;

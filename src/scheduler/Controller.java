@@ -285,14 +285,6 @@ public class Controller {
         solver.start();
     }
 
-    //true = task pending in background, false = idle state
-    private void resetCalculateButton(){
-        calculateButton.textProperty().setValue("Calculate");
-        calculateButton.setContentDisplay(ContentDisplay.TEXT_ONLY);
-        calculateButton.getStyleClass().remove("processing");
-        calculateButton.setOnAction(this::solveMatrix);
-    }
-
     private void onQueued(Event event){
         calculateButton.setOnAction((e -> ((WorkerStateEvent)event).getSource().cancel()));
         calculateButton.getStyleClass().add("processing");
@@ -383,6 +375,13 @@ public class Controller {
         return legend;
     }
 
+    private void resetCalculateButton(){
+        calculateButton.textProperty().setValue("Calculate");
+        calculateButton.setContentDisplay(ContentDisplay.TEXT_ONLY);
+        calculateButton.getStyleClass().remove("processing");
+        calculateButton.setOnAction(this::solveMatrix);
+    }
+
     private void updateTimeMatrix(Observable txtprop, String old, String str) {
         int val;
         try {
@@ -423,7 +422,7 @@ public class Controller {
         clearMatrix();
     }
 
-    double initX = 0;
+    private double initX = 0;
     @FXML
     private void setWindow() {
         Point mouse = MouseInfo.getPointerInfo().getLocation();

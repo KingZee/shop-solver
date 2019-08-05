@@ -3,6 +3,10 @@ package scheduler;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Enumeration for all shop types
+ */
+
 public enum ShopType {
     OPEN("Open Shop"),
     JOB("Job Shop"),
