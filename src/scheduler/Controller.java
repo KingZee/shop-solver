@@ -29,7 +29,6 @@ import scheduler.solvers.ExactSolver;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Controller {
@@ -116,6 +115,9 @@ public class Controller {
         }
         table.getColumnConstraints().add(cols, defaultColConst());
         cols++;
+        if(cols > 10){
+            ((GridPane) ((Node) e.getSource()).getParent()).getChildren().remove(e.getSource());
+        }
         generateMatrix();
     }
 
@@ -132,6 +134,11 @@ public class Controller {
         nodes.add(row);
         table.getRowConstraints().add(rows, defaultRowConst());
         rows++;
+        if(problem.getType()==ShopType.JOB && rows > 5) {
+            ((GridPane) ((Node) e.getSource()).getParent()).getChildren().remove(e.getSource());
+        } else if(rows > 10){
+            ((GridPane) ((Node) e.getSource()).getParent()).getChildren().remove(e.getSource());
+        }
         generateMatrix();
     }
 
@@ -246,7 +253,7 @@ public class Controller {
 
         if (ShopType.getByName(shopType.getText()) == ShopType.JOB) {     //Job Shop needs machine rows
 
-            for (Node label : table.getChildren()) {              //So we clear the top row
+            for (Node label : table.getChildren()) {
                 if (label instanceof Label && ((Label) label).getText().charAt(0) == 'M') {
                     ((Label) label).setText("M");
                 }
@@ -255,16 +262,18 @@ public class Controller {
             for (int i = 0; i < nodes.size(); i++) {
                 for (int j = 0; j < nodes.get(i).size(); j++) {
                     VBox cell = ((VBox) nodes.get(i).get(j));
-                    for (Node txtbox : cell.getChildren()) {
-                        if (txtbox instanceof TextField) {
-                            ((TextField) txtbox).setText(Integer.toString(problem.getTimeMatrix()[i][j]));
+                    for (Node box : cell.getChildren()) {
+                        if (box instanceof TextField) {
+                            ((TextField) box).setText(Integer.toString(problem.getTimeMatrix()[i][j]));
+                        }
+                        if(box instanceof JFXButton){
+                            ((JFXButton) box).setText("M" + (problem.getMachineMatrix()[i][j] + 1));
                         }
                     }
                     if (cell.getChildren().size() == 1)
                         cell.getChildren().add(machineButton("M" + (problem.getMachineMatrix()[i][j] + 1), this::updateMachineMatrix));
                 }
             }
-
         }
     }
 
@@ -300,7 +309,7 @@ public class Controller {
         List<Schedule> result = (List<Schedule>)worker.getSource().getValue();
         Solver.JobData data = Solver.parseSchedules(result);
 
-        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem.getTimeMatrix());
+        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem);
 
         NumberAxis xAxis = new NumberAxis();
         CategoryAxis yAxis = new CategoryAxis();
@@ -355,7 +364,6 @@ public class Controller {
 
     private void onCancelled(Event event){
         WorkerStateEvent worker = (WorkerStateEvent)event;
-        System.out.println(worker.getSource().getState());
         resetCalculateButton();
         System.out.println("Event canceled!");
     }
@@ -407,7 +415,6 @@ public class Controller {
                 int newVal = val % problem.machineCount;
                 ((JFXButton) butt).setText("M" + (newVal + 1));
                 problem.updateMachine(nodes.indexOf(row), row.indexOf(cell), newVal);
-                System.out.println(Arrays.deepToString(problem.getMachineMatrix()));
             }
         }
     }
@@ -415,9 +422,11 @@ public class Controller {
     @FXML
     private void switchShop(ActionEvent e) {
         if (((JFXButton) e.getSource()).getId().equals("leftShopType")) {
-            shopType.setText(ShopType.getByName(shopType.getText()).prev().getName());
+            problem.setType(problem.getType().prev());
+            shopType.setText(problem.getType().getName());
         } else {
-            shopType.setText(ShopType.getByName(shopType.getText()).next().getName());
+            problem.setType(problem.getType().next());
+            shopType.setText(problem.getType().getName());
         }
         clearMatrix();
     }

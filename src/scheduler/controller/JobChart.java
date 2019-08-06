@@ -10,7 +10,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import scheduler.Problem;
 import scheduler.Schedule;
+import scheduler.ShopType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -19,18 +21,21 @@ import java.util.List;
 
 public class JobChart<X, Y> extends XYChart<X, Y> {
 
-    public static List<Series<Number, String>> MapToChart(Schedule schedule, int[][] times) {  //List for end times & job indices
+    public static List<Series<Number, String>> MapToChart(Schedule schedule, Problem problem) {  //List for end times & job indices
         List<Series<Number, String>> chart = new ArrayList<>();                                       //Array for job processing times
-        for (int i = 0; i < times[0].length; i++) {
+        int[][] timeMatrix = problem.getTimeMatrix();
+        int[][] machineMatrix = problem.getMachineMatrix();
+        for (int i = 0; i < problem.machineCount; i++) {
             Series<Number, String> machineSeries = new Series<>();
-            for (int j = 0; j < times.length; j++) {
-                if(times[j][i] !=0) {
+            for (int j = 0; j < timeMatrix.length; j++) {
+                if(timeMatrix[j][i] !=0) {
+                    int machineIndex = problem.getType() == ShopType.JOB ? machineMatrix[j][i] : i;
                     Node blockPane = new StackPane();
                     Data<Number, String> block = new Data<>();
                     block.setNode(blockPane);
-                    block.setYValue("Machine " + (i + 1));                                              //Y value : machine
-                    block.setXValue(schedule.get(new Point(j, i)) - times[j][i]);   //X value : start time
-                    block.setExtraValue(times[j][i]);                     //Extra value : processing time
+                    block.setYValue("Machine " + (machineIndex+1));
+                    block.setXValue(schedule.get(new Point(j, machineIndex)) - timeMatrix[j][i]);   //X value : start time
+                    block.setExtraValue(timeMatrix[j][i]);                     //Extra value : processing time
                     blockPane.getStyleClass().add("job-" + (j + 1));
                     machineSeries.getData().add(block);
                 }

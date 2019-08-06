@@ -102,18 +102,8 @@ public class Problem {
         return type;
     }
 
-    public void changeType(ShopType type) {
+    public void setType(ShopType type) {
         this.type = type;
-    }
-
-    public void updateType(ShopType type) {
-        this.type = type;
-        if (type != ShopType.JOB) {
-            machineMatrix = null;
-            return;
-        }
-        for (int j = 0; j < jobCount; j++)
-            machineMatrix[j] = shuffleArray(IntStream.rangeClosed(0, machineCount - 1).toArray());
     }
 
     /**
