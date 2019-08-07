@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.*?>
+<VBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="578.0" style="-fx-background-color: rgba(0, 100, 100, 0.1);" stylesheets="@main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.Controller">
+   <children>
+      <HBox fx:id="titleBar" onMouseDragged="#dragWindow" onMousePressed="#setWindow" styleClass="system-bar">
+         <children>
+            <Label maxWidth="1.7976931348623157E308" prefHeight="25.0" styleClass="label" text="Shop Scheduling Solver" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+            <JFXButton fx:id="miniButton" alignment="CENTER_RIGHT" buttonType="RAISED" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#reduceWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('assets/min-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="closeButton" alignment="CENTER_RIGHT" buttonType="RAISED" cancelButton="true" contentDisplay="CENTER" onAction="#closeWindow" prefWidth="${titleBar.height}" style="-fx-background-image: url('assets/close-icon.png');" styleClass="button" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <HBox fx:id="main" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #263238;" VBox.vgrow="ALWAYS">
+         <children>
+            <Accordion expandedPane="$problemContainer" HBox.hgrow="ALWAYS">
+              <panes>
+                <TitledPane fx:id="problemContainer" text="  Problem Parameters:">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <GridPane layoutX="32.2" layoutY="32.2" minHeight="0.0" minWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="1.0">
+                              </GridPane>
+                           </children></AnchorPane>
+                  </content>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                </TitledPane>
+                <TitledPane text="  Output:">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                       <children>
+                              <VBox fx:id="outputContainer" maxWidth="1.7976931348623157E308" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
+                                 <children>
+                                <TextFlow VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="matrix-input" text="No Input. Press Calculate to generate output." />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="6.0" />
+                                       </VBox.margin>
+                                    </TextFlow>
+                                 </children>
+                              </VBox>
+                       </children>
+                        </AnchorPane>
+                  </content>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                </TitledPane>
+              </panes>
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Accordion>
+            <!--VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+               <children>
+                   <TitledPane onMouseClicked="#expandTitle" fx:id="matrix" text="  Problem Parameters:" VBox.vgrow="ALWAYS">
+                     <content>
+                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </content>
+                        <opaqueInsets>
+                           <Insets />
+                        </opaqueInsets>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                   </TitledPane>
+                   <TitledPane onMouseClicked="#expandTitle" fx:id="chart" expanded="false" text="  Output:" VBox.vgrow="ALWAYS">
+                     <content>
+                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </content>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                   </TitledPane>
+               </children>
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </VBox-->
+            <VBox fx:id="menu" prefWidth="${container.width/4}" styleClass="menu">
+               <children>
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Menu Options" textFill="#fff1d3">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin></Label>
+                  <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Shop Type" textFill="#fff1d3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin></Label>
+                        <HBox maxWidth="1.7976931348623157E308">
+                           <children>
+                              <JFXButton fx:id="leftShopType" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#switchShop" rotate="180.0" styleClass="arrow-button" stylesheets="@main.css">
+                                 <graphic>
+                                    <SVGPath blendMode="ADD" content="M 27 15 3 27 3 3 z" fill="#080a12" stroke="#fff1d3" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="OUTSIDE" strokeWidth="1.5" />
+                                 </graphic></JFXButton>
+                              <JFXTextField fx:id="shopType" alignment="CENTER" editable="false" text="Job-Shop Scheduling" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font></JFXTextField>
+                              <JFXButton fx:id="rightShopType" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#switchShop" styleClass="arrow-button" stylesheets="@main.css">
+                                 <graphic>
+                                    <SVGPath blendMode="ADD" content="M 27 15 3 27 3 3 z" fill="#080a12" stroke="#fff1d3" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="OUTSIDE" strokeWidth="1.5" />
+                                 </graphic></JFXButton>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" layoutX="20.0" layoutY="48.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Empty Processing %" textFill="#fff1d3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin></Label>
+                        <JFXSlider fx:id="zeroPercent" value="0" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" layoutX="20.0" layoutY="214.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Processing Times Interval" textFill="#fff1d3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin></Label>
+                        <HBox maxWidth="1.7976931348623157E308" VBox.vgrow="NEVER">
+                           <children>
+                              <JFXTextField fx:id="leftInterval" alignment="CENTER" promptText="0" text="0" HBox.hgrow="ALWAYS">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </HBox.margin>
+                              </JFXTextField>
+                              <Label maxHeight="1.7976931348623157E308" minWidth="-Infinity" text="to" textFill="#fff1d3" HBox.hgrow="ALWAYS">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="15.0" right="15.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <JFXTextField fx:id="rightInterval" alignment="CENTER" promptText="1000" text="10" HBox.hgrow="ALWAYS">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </HBox.margin>
+                              </JFXTextField>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#generateMatrix" style="-fx-background-color: #ffecc2;" text="Generate Matrix" textFill="#263238" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin></JFXButton>
+                  <HBox>
+                     <children>
+                        <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#clearMatrix" style="-fx-background-color: #fff7e6;" text="Clear" textFill="#263238" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets right="4.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#resetMatrix" style="-fx-background-color: #fff7e6;" text="Reset" textFill="#263238" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="4.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <JFXButton fx:id="calculateButton" buttonType="RAISED" contentDisplay="TEXT_ONLY" maxWidth="1.7976931348623157E308" onAction="#solveMatrix" prefHeight="${menu.width * 0.5}" styleClass="calculate-button" text="Calculate" textFill="#263238" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <graphic>
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/loader.gif" />
+                           </image>
+                        </ImageView>
+                     </graphic></JFXButton>
+                  <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" styleClass="copyright" text="© Zakkari Abdelhakim" textFill="#f4f4f4" />
+               </children></VBox>
+         </children></HBox>
+   </children>
+</VBox>

@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.initStyle(StageStyle.TRANSPARENT);
-        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
         Scene scene = new Scene(root, screen.getWidth() / 1.35, screen.getHeight() / 1.25);

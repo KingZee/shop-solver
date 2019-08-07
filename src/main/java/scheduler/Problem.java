@@ -16,11 +16,11 @@ public class Problem {
     /**
      * The matrix of processing times
      */
-    private int timeMatrix[][];
+    private int[][] timeMatrix;
     /**
      * The matrix of precedence constraints (will only be automatically populated for job-shop)
      */
-    private int machineMatrix[][];
+    private int[][] machineMatrix;
     /**
      * Type of optimization problem
      *
