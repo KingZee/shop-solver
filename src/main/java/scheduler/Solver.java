@@ -18,7 +18,7 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * Local class to represent information about the current schedule
      */
-    static class JobData {
+    protected static class JobData {
         private int totalSchedules;
         private int bestTime;
         private int worstTime;

@@ -286,13 +286,7 @@ public class Controller {
             solver = (Solver) activeSolverType.getConstructor(Problem.class).newInstance(problem);
             solver.createTask();
             solver.setOnCancelled(this::onCancelled);
-            solver.setOnFailed(ev -> {
-                try {
-                    onFailed(ev);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            });
+            solver.setOnFailed(this::onFailed);
             solver.setOnSucceeded(this::onSolved);
             solver.setOnScheduled(this::onQueued);
             solver.start();
@@ -361,12 +355,10 @@ public class Controller {
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
     }
 
-    private void onFailed(Event event) throws Throwable {
+    private void onFailed(Event event){
         WorkerStateEvent worker = (WorkerStateEvent) event;
         resetCalculateButton();
         System.out.println("Event failed!");
-
-        throw worker.getSource().getException();
     }
 
     private void onCancelled(Event event) {

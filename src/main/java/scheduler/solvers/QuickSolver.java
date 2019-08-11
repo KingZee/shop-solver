@@ -1,6 +1,5 @@
 package scheduler.solvers;
 
-import com.google.common.collect.Lists;
 import javafx.concurrent.Task;
 import scheduler.Problem;
 import scheduler.Schedule;
@@ -9,6 +8,7 @@ import scheduler.Solver;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class QuickSolver extends Solver {
@@ -48,6 +48,12 @@ public class QuickSolver extends Solver {
                 schedules.add(out);
             }
 
+            //Calculate makespan
+            for (Schedule sch : schedules) {
+                if(currentTask.isCancelled()) return null;
+                sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
+            }
+
         } else if (getProblem().getType() == ShopType.OPEN) {
             Schedule[] baseMachines = new Schedule[getProblem().machineCount];
 
@@ -61,33 +67,29 @@ public class QuickSolver extends Solver {
                 }
             }
 
-            List<List<Schedule>> baseSchedule = new ArrayList<>();
+            List<Schedule> baseSchedules = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size(),currentTask));
+                sch.getIndices().sort(Comparator.comparingInt(sch::get));
+                baseSchedules.add(sch);
             }
 
-            //Cartesian array combination of schedules together
-            List<List<Schedule>> full = Lists.cartesianProduct(baseSchedule);    //4jobs x 8 machines, 7x3, 5x5
-            List<Schedule> initialPermutation = new ArrayList<>();
+            Schedule initialSchedule = Schedule.concat(baseSchedules);
+            Schedule bestPerm = initialSchedule;
 
-            //Concatenate into final Schedules containing all jobs + machines
-            for (List<Schedule> sch : full) {
-                initialPermutation.add(Schedule.concat(sch));
-            }
+            for (int i = 0; i < timeMatrix.length; i++) {
+                List<Schedule> tempPerms = new ArrayList<>(permuteSubset(bestPerm, i, currentTask));
 
-            //Concatenate into final Schedules containing all jobs + machines
-            for (Schedule sch : initialPermutation) {
-                List<Schedule> machinePerms = new ArrayList<>();
-                machinePerms.add(sch);
-                for (int i = 0; i < timeMatrix.length; i++) {
-                    final List<Schedule> tempPerms = new ArrayList<>();
-                    for(Schedule schedule : machinePerms) {
-                        tempPerms.addAll(permuteSubset(schedule, i, currentTask));
-                    }
-                    machinePerms = tempPerms;
+                List<Schedule> parsedPerms = new ArrayList<>();
+                for (Schedule sch : tempPerms) {
+                    Schedule copy = new Schedule(sch);
+                    sch.forEach((job, time) -> copy.put(job, time + copy.getPreviousTime(job)));
+                    parsedPerms.add(copy);
                 }
-                schedules.addAll(machinePerms);
+
+                JobData output = parseSchedules(parsedPerms);
+                bestPerm = tempPerms.get(parsedPerms.indexOf(output.getBestSchedule()));
+                schedules.addAll(parsedPerms);
             }
 
         } else if (getProblem().getType() == ShopType.JOB) {
@@ -109,12 +111,13 @@ public class QuickSolver extends Solver {
                 }
                 schedules.add(out);
             }
-        }
 
-        //Calculate makespan
-        for (Schedule sch : schedules) {
-            if(currentTask.isCancelled()) return null;
-            sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
+            //Calculate makespan
+            for (Schedule sch : schedules) {
+                if(currentTask.isCancelled()) return null;
+                sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
+            }
+
         }
 
         return schedules;
