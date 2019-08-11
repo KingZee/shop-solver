@@ -139,6 +139,24 @@ public class Schedule extends HashMap<Point, Integer> {
     }
 
     /**
+     * Returns the processing time from a job's precedent/previous blocking task
+     * Useful for computing makespan
+     *
+     * @param job Job (jobIndex, machineIndex)
+     * @return Processing time of preceding blocking task
+     */
+
+    public int getPreviousTime(Point job) {
+        Integer precedent = this.get(this.getPrecedentJob(job));
+        Integer previous = this.get(this.getPreviousJob(job));
+
+        precedent = precedent == null ? 0 : precedent;
+        previous = previous == null ? 0 : previous;
+
+        return Math.max(precedent, previous);
+    }
+
+    /**
      * Returns the largest processing time of this schedule instance
      *
      * @return The largest processing time of a schedule
