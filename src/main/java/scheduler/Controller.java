@@ -357,7 +357,30 @@ public class Controller {
 
     private void onFailed(Event event){
         WorkerStateEvent worker = (WorkerStateEvent) event;
+        Throwable error = worker.getSource().getException();
+
+        List<Node> children = outputContainer.getChildren();
+        while (children.size() > 1){
+            Node node = children.get(0);
+            if(!(node instanceof TextFlow)){
+                children.remove(node);
+            }
+        }
+
+        TextFlow textnode = (TextFlow) children.get(0);
+        textnode.getChildren().clear();
+
+        if(error instanceof IllegalArgumentException && error.getMessage().contains("Cartesian product too large")){
+            textnode.getChildren().add(outputText("Error : Matrix is too big to be solved by this solver."));
+        } else if(error instanceof OutOfMemoryError){
+            textnode.getChildren().add(outputText("Error : Program ran out of memory."));
+        } else {
+            textnode.getChildren().add(outputText("Error : "+error.getLocalizedMessage()));
+        }
+
         resetCalculateButton();
+        TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
+        ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
         System.out.println("Event failed!");
     }
 
