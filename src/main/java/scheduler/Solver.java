@@ -102,7 +102,7 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * This is the main function used to solve problem instances
      * It is abstract and only usable from children
-     * It is also Task-aware, and
+     * It is also Task-aware, through the currentTask parameter
      *
      * @param currentTask the current Task instantiated with this instance.
      *                    Implementations of this function should listen to the isCancelled() event,
@@ -111,6 +111,18 @@ public abstract class Solver extends Service<List<Schedule>> {
      * @see Schedule
      */
     protected abstract List<Schedule> solveMakespan(Task currentTask);
+
+    /**
+     * Heap's algorithm to generate all permutations of a Schedule
+     *
+     * @param map         A single Schedule to generate permutations for
+     * @param n           Length of the Schedule
+     * @param currentTask This function is also task-aware
+     * @return List of permuted schedules
+     */
+    public static List<Schedule> permute(Schedule map, int n, Task currentTask) {
+        return permute(map, n, new ArrayList<>(), currentTask);
+    }
 
     private static List<Schedule> permute(Schedule map, int n, List<Schedule> out, Task currentTask) {
         if (n == 1) {
@@ -130,15 +142,29 @@ public abstract class Solver extends Service<List<Schedule>> {
     }
 
     /**
-     * Heap's algorithm to generate all permutations of a Schedule
+     * Permute operations of a specific job within a schedule
      *
      * @param map         A single Schedule to generate permutations for
-     * @param n           Length of the Schedule
+     * @param jobIndex    Index of the job to permute operations for
      * @param currentTask This function is also task-aware
      * @return List of permuted schedules
      */
-    public static List<Schedule> permute(Schedule map, int n, Task currentTask) {
-        return permute(map, n, new ArrayList<>(), currentTask);
+
+    public static List<Schedule> permuteSubset(Schedule map, int jobIndex, Task currentTask) {
+        List<Point> indices = new ArrayList<>(map.getIndices());
+        indices.removeIf(point -> point.x != jobIndex);
+        Schedule jobs = new Schedule();
+        indices.forEach(point -> jobs.put(point,map.getIndices().indexOf(point)));
+        List<Schedule> permutedJobs = permute(jobs,jobs.size(),currentTask);
+        List<Schedule> out = new ArrayList<>();
+        for(Schedule partialSchedule : permutedJobs){
+            Schedule outputSchedule = new Schedule(map);
+            for(int i = 0; i<jobs.size(); i++){
+                outputSchedule.getIndices().set(jobs.getByIndex(i),partialSchedule.getIndices().get(i));
+            }
+            out.add(outputSchedule);
+        }
+        return out;
     }
 
 /*    //Generate all permutations for a Schedule (List MachineMap)
