@@ -25,20 +25,52 @@
       </HBox>
       <HBox fx:id="main" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #263238;" VBox.vgrow="ALWAYS">
          <children>
-            <Accordion expandedPane="$problemContainer" HBox.hgrow="ALWAYS">
+            <Accordion HBox.hgrow="ALWAYS">
               <panes>
-                <TitledPane fx:id="problemContainer" text="  Problem Parameters:">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <GridPane layoutX="32.2" layoutY="32.2" minHeight="0.0" minWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="1.0">
-                              </GridPane>
-                           </children></AnchorPane>
-                  </content>
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                </TitledPane>
+                 <TitledPane fx:id="problemContainer" text="  Problem Parameters:">
+                    <content>
+                       <AnchorPane minHeight="0.0" minWidth="0.0">
+                          <children>
+                             <HBox layoutX="32.2" layoutY="32.2" minHeight="0.0" minWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="1.0">
+                                <children>
+                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="${problemContainer.width * 0.7}">
+                                       <GridPane fx:id="problemGrid" minHeight="0.0" minWidth="0.0">
+                                       </GridPane>
+                                   </AnchorPane>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label text="Algorithm settings :" textFill="#263238" VBox.vgrow="ALWAYS">
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" />
+                                             </VBox.margin>
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font></Label>
+                                          <JFXRadioButton selected="true" onAction="#updateSolver" text="Quick Solver" textFill="#263238">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                             <VBox.margin>
+                                                <Insets bottom="5.0" />
+                                             </VBox.margin>
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="algorithms" />
+                                             </toggleGroup></JFXRadioButton>
+                                          <JFXRadioButton text="Exact Solver" onAction="#updateSolver" textFill="#263238" toggleGroup="$algorithms">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </JFXRadioButton>
+                                       </children>
+                                    </VBox>
+                                </children>
+                             </HBox>
+                          </children></AnchorPane>
+                    </content>
+                    <font>
+                       <Font size="14.0" />
+                    </font>
+                 </TitledPane>
                 <TitledPane text="  Output:">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
