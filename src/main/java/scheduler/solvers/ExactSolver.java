@@ -1,7 +1,6 @@
 package scheduler.solvers;
 
 import com.google.common.collect.Lists;
-import javafx.concurrent.Task;
 import scheduler.Problem;
 import scheduler.Schedule;
 import scheduler.ShopType;
@@ -18,7 +17,7 @@ public class ExactSolver extends Solver {
     }
 
     @Override
-    protected List<Schedule> solveMakespan(Task currentTask) {
+    protected List<Schedule> solveMakespan() {
 
         if (this.getProblem().machineCount == 0) {
             System.err.println("No matrix set");
@@ -46,7 +45,7 @@ public class ExactSolver extends Solver {
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size(), currentTask));
+                baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -74,7 +73,7 @@ public class ExactSolver extends Solver {
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size(), currentTask));
+                baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -93,7 +92,7 @@ public class ExactSolver extends Solver {
                 for (int i = 0; i < timeMatrix.length; i++) {
                     final List<Schedule> tempPerms = new ArrayList<>();
                     for (Schedule schedule : machinePerms) {
-                        tempPerms.addAll(permuteSubset(schedule, i, currentTask));
+                        tempPerms.addAll(permuteSubset(schedule, i));
                     }
                     machinePerms = tempPerms;
                 }
@@ -110,15 +109,13 @@ public class ExactSolver extends Solver {
                     if (timeMatrix[j][i] != 0) {
                         baseMachines[i].put(new Point(j, machineMatrix[j][i]), timeMatrix[j][i]);
                     }
-                    if (currentTask.isCancelled()) return null;
                 }
             }
 
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size(), currentTask));
-                if (currentTask.isCancelled()) return null;
+                baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -126,7 +123,6 @@ public class ExactSolver extends Solver {
 
             //Concatenate into final Schedules containing all jobs + machines
             for (List<Schedule> sch : full) {
-                if (currentTask.isCancelled()) return null;
                 schedules.add(Schedule.concat(sch));
             }
 
@@ -134,7 +130,6 @@ public class ExactSolver extends Solver {
 
         //Calculate makespan
         for (Schedule sch : schedules) {
-            if (currentTask.isCancelled()) return null;
             sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
         }
 

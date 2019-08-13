@@ -1,6 +1,5 @@
 package scheduler.solvers;
 
-import javafx.concurrent.Task;
 import scheduler.Problem;
 import scheduler.Schedule;
 import scheduler.ShopType;
@@ -18,7 +17,7 @@ public class QuickSolver extends Solver {
     }
 
     @Override
-    protected List<Schedule> solveMakespan(Task currentTask) {
+    protected List<Schedule> solveMakespan() {
         if (this.getProblem().machineCount == 0) {
             System.err.println("No matrix set");
             return new ArrayList<>();
@@ -33,7 +32,7 @@ public class QuickSolver extends Solver {
             Schedule dummySchedule = new Schedule();
             for(int i =0; i < timeMatrix.length; i++) dummySchedule.put(new Point(i,0),0);
 
-            List<Schedule> scheduleBase = permute(dummySchedule,dummySchedule.size(),currentTask);
+            List<Schedule> scheduleBase = permute(dummySchedule,dummySchedule.size());
 
             for(Schedule permutation : scheduleBase){
                 Schedule out = new Schedule();
@@ -50,7 +49,6 @@ public class QuickSolver extends Solver {
 
             //Calculate makespan
             for (Schedule sch : schedules) {
-                if(currentTask.isCancelled()) return null;
                 sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
             }
 
@@ -78,7 +76,7 @@ public class QuickSolver extends Solver {
             Schedule bestPerm = initialSchedule;
 
             for (int i = 0; i < timeMatrix.length; i++) {
-                List<Schedule> tempPerms = new ArrayList<>(permuteSubset(bestPerm, i, currentTask));
+                List<Schedule> tempPerms = new ArrayList<>(permuteSubset(bestPerm, i));
 
                 List<Schedule> parsedPerms = new ArrayList<>();
                 for (Schedule sch : tempPerms) {
@@ -97,7 +95,7 @@ public class QuickSolver extends Solver {
             Schedule dummySchedule = new Schedule();
             for(int i =0; i < timeMatrix.length; i++) dummySchedule.put(new Point(i,0),0);
 
-            List<Schedule> scheduleBase = permute(dummySchedule,dummySchedule.size(),currentTask);
+            List<Schedule> scheduleBase = permute(dummySchedule,dummySchedule.size());
 
             for(Schedule permutation : scheduleBase){
                 Schedule out = new Schedule();
@@ -114,7 +112,6 @@ public class QuickSolver extends Solver {
 
             //Calculate makespan
             for (Schedule sch : schedules) {
-                if(currentTask.isCancelled()) return null;
                 sch.forEach((job, time) -> sch.put(job, time + sch.getPreviousTime(job)));
             }
 

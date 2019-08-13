@@ -6,6 +6,8 @@ import javafx.concurrent.Task;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Abstract class to inherit from when creating a new Solver type
@@ -16,7 +18,7 @@ import java.util.List;
 public abstract class Solver extends Service<List<Schedule>> {
 
     /**
-     * Local class to represent information about the current schedule
+     * Local class to represent information about the current schedule list
      */
     protected static class JobData {
         private int totalSchedules;
@@ -90,10 +92,29 @@ public abstract class Solver extends Service<List<Schedule>> {
     @Override
     public Task<List<Schedule>> createTask() {
         return new Task<List<Schedule>>() {
-
             @Override
             protected List<Schedule> call() throws Exception {
-                List<Schedule> result = solveMakespan(this);
+                Task currentTask = this;
+                Thread taskThread = Thread.currentThread();
+                Timer checker = new Timer();
+                checker.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(currentTask.isDone()) {
+                                cancel();
+                                System.gc();
+                            }
+                            if(currentTask.isCancelled()) taskThread.stop();
+                            taskThread.suspend();
+                            Thread.sleep(20);
+                            taskThread.resume();
+                        } catch (Exception ex){
+                            System.out.println(ex);
+                        }
+                    }
+                },0,50);
+                List<Schedule> result = solveMakespan();
                 return result;
             }
         };
@@ -102,36 +123,32 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * This is the main function used to solve problem instances
      * It is abstract and only usable from children
-     * It is also Task-aware, through the currentTask parameter
+     * This method is forcefully stopped on user cancel, while memory will be freed once that happens
+     * this method should not lock or operate on any objects declared outside of its scope
      *
-     * @param currentTask the current Task instantiated with this instance.
-     *                    Implementations of this function should listen to the isCancelled() event,
-     *                    to cancel computation if the task itself is cancelled.
      * @return A List of Schedules, representing the solution space
      * @see Schedule
      */
-    protected abstract List<Schedule> solveMakespan(Task currentTask);
+    protected abstract List<Schedule> solveMakespan();
 
     /**
      * Heap's algorithm to generate all permutations of a Schedule
      *
      * @param map         A single Schedule to generate permutations for
      * @param n           Length of the Schedule
-     * @param currentTask This function is also task-aware
      * @return List of permuted schedules
      */
-    public static List<Schedule> permute(Schedule map, int n, Task currentTask) {
-        return permute(map, n, new ArrayList<>(), currentTask);
+    public static List<Schedule> permute(Schedule map, int n) {
+        return permute(map, n, new ArrayList<>());
     }
 
-    private static List<Schedule> permute(Schedule map, int n, List<Schedule> out, Task currentTask) {
+    private static List<Schedule> permute(Schedule map, int n, List<Schedule> out) {
         if (n == 1) {
             out.add(new Schedule(map));
             return out;
         } else {
             for (int i = 0; i < n; i++) {
-                if (currentTask.isCancelled()) return null;
-                permute(map, n - 1, out, currentTask);
+                permute(map, n - 1, out);
                 int j = (n % 2 == 0) ? i : 0;
                 Point t = map.getIndices().get(n - 1);
                 map.getIndices().set(n - 1, map.getIndices().get(j));
@@ -146,16 +163,15 @@ public abstract class Solver extends Service<List<Schedule>> {
      *
      * @param map         A single Schedule to generate permutations for
      * @param jobIndex    Index of the job to permute operations for
-     * @param currentTask This function is also task-aware
      * @return List of permuted schedules
      */
 
-    public static List<Schedule> permuteSubset(Schedule map, int jobIndex, Task currentTask) {
+    public static List<Schedule> permuteSubset(Schedule map, int jobIndex) {
         List<Point> indices = new ArrayList<>(map.getIndices());
         indices.removeIf(point -> point.x != jobIndex);
         Schedule jobs = new Schedule();
         indices.forEach(point -> jobs.put(point,map.getIndices().indexOf(point)));
-        List<Schedule> permutedJobs = permute(jobs,jobs.size(),currentTask);
+        List<Schedule> permutedJobs = permute(jobs,jobs.size());
         List<Schedule> out = new ArrayList<>();
         for(Schedule partialSchedule : permutedJobs){
             Schedule outputSchedule = new Schedule(map);
