@@ -25,7 +25,7 @@
       </HBox>
       <HBox fx:id="main" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #263238;" VBox.vgrow="ALWAYS">
          <children>
-            <Accordion HBox.hgrow="ALWAYS">
+            <Accordion expandedPane="$problemContainer" HBox.hgrow="ALWAYS">
               <panes>
                  <TitledPane fx:id="problemContainer" text="  Problem Parameters:">
                     <content>
@@ -46,7 +46,7 @@
                                              <font>
                                                 <Font size="16.0" />
                                              </font></Label>
-                                          <JFXRadioButton selected="true" onAction="#updateSolver" text="Quick Solver" textFill="#263238">
+                                          <JFXRadioButton onAction="#updateSolver" selected="true" text="Quick Solver" textFill="#263238">
                                              <font>
                                                 <Font size="14.0" />
                                              </font>
@@ -56,7 +56,7 @@
                                              <toggleGroup>
                                                 <ToggleGroup fx:id="algorithms" />
                                              </toggleGroup></JFXRadioButton>
-                                          <JFXRadioButton text="Exact Solver" onAction="#updateSolver" textFill="#263238" toggleGroup="$algorithms">
+                                          <JFXRadioButton onAction="#updateSolver" text="Exact Solver" textFill="#263238" toggleGroup="$algorithms">
                                              <font>
                                                 <Font size="14.0" />
                                              </font>
@@ -261,7 +261,7 @@
                      <graphic>
                         <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../assets/loader.gif" />
+                              <Image url="@assets/loader.gif" />
                            </image>
                         </ImageView>
                      </graphic></JFXButton>
