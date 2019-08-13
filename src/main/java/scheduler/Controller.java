@@ -310,7 +310,8 @@ public class Controller {
         List<Schedule> result = (List<Schedule>) worker.getSource().getValue();
         Solver.JobData data = Solver.parseSchedules(result);
 
-        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem);
+
+        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(new Schedule(data.getBestSchedule()), problem);
 
         NumberAxis xAxis = new NumberAxis();
         CategoryAxis yAxis = new CategoryAxis();
@@ -353,6 +354,9 @@ public class Controller {
 
         TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
+
+        result.clear();
+        System.gc();
     }
 
     private void onFailed(Event event){
