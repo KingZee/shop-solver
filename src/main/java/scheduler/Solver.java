@@ -66,7 +66,7 @@ public abstract class Solver extends Service<List<Schedule>> {
      * This can be set at instantiation or modified later
      * @see Problem
      */
-    Problem problem;
+    private Problem problem;
 
     public Solver() {
         problem = new Problem();
@@ -90,7 +90,7 @@ public abstract class Solver extends Service<List<Schedule>> {
      * @return task that will resolve with the solved problem if succeeded
      */
     @Override
-    public Task<List<Schedule>> createTask() {
+    protected Task<List<Schedule>> createTask() {
         return new Task<List<Schedule>>() {
             @Override
             protected List<Schedule> call() throws Exception {
@@ -255,8 +255,8 @@ public abstract class Solver extends Service<List<Schedule>> {
         final int totalSchedules = schedules.size();
         int worst = 0, best = Integer.MAX_VALUE;
         double avg = 0;
-        Schedule bestSchedule = null,
-                worstSchedule = null;
+        Schedule bestSchedule = new Schedule(),
+                worstSchedule = new Schedule();
         for (Schedule schedule : schedules) {
             int makespan = schedule.getMaxValue();
             avg += (double) (makespan) / (double) schedules.size();
@@ -271,7 +271,7 @@ public abstract class Solver extends Service<List<Schedule>> {
                 bestSchedule = schedule;
             }
         }
-        return new JobData(best, worst, avg, bestSchedule, worstSchedule, totalSchedules);
+        return new JobData(best, worst, avg, new Schedule(bestSchedule), new Schedule(worstSchedule), totalSchedules);
     }
 
 }

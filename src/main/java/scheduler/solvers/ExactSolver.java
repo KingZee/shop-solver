@@ -45,7 +45,7 @@ public class ExactSolver extends Solver {
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size()));
+                if (sch.size() != 0) baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -56,8 +56,7 @@ public class ExactSolver extends Solver {
                 schedules.add(Schedule.concat(sch));
             }
 
-        }
-        else if (getProblem().getType() == ShopType.OPEN) {
+        } else if (getProblem().getType() == ShopType.OPEN) {
             Schedule[] baseMachines = new Schedule[getProblem().machineCount];
 
             //Generate schedule per job, note this is iterating vertically
@@ -73,7 +72,7 @@ public class ExactSolver extends Solver {
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size()));
+                if (sch.size() != 0) baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -98,8 +97,7 @@ public class ExactSolver extends Solver {
                 }
                 schedules.addAll(machinePerms);
             }
-        }
-        else if (getProblem().getType() == ShopType.JOB) {
+        } else if (getProblem().getType() == ShopType.JOB) {
             Schedule[] baseMachines = new Schedule[getProblem().machineCount];
 
             //Generate schedule per order, note this is iterating vertically
@@ -115,7 +113,7 @@ public class ExactSolver extends Solver {
             List<List<Schedule>> baseSchedule = new ArrayList<>();
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
-                baseSchedule.add(permute(sch, sch.size()));
+                if (sch.size() != 0) baseSchedule.add(permute(sch, sch.size()));
             }
 
             //Cartesian array combination of schedules together
@@ -123,7 +121,7 @@ public class ExactSolver extends Solver {
 
             //Concatenate into final Schedules containing all jobs + machines
             for (List<Schedule> sch : full) {
-                schedules.add(Schedule.concat(sch));
+                if (sch.size() != 0) schedules.add(Schedule.concat(sch));
             }
 
         }

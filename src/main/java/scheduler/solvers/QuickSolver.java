@@ -69,7 +69,7 @@ public class QuickSolver extends Solver {
             //Permutations of each job's schedule
             for (Schedule sch : baseMachines) {
                 sch.getIndices().sort(Comparator.comparingInt(sch::get));
-                baseSchedules.add(sch);
+                if(sch.size() != 0) baseSchedules.add(sch);
             }
 
             Schedule initialSchedule = Schedule.concat(baseSchedules);
@@ -77,17 +77,18 @@ public class QuickSolver extends Solver {
 
             for (int i = 0; i < timeMatrix.length; i++) {
                 List<Schedule> tempPerms = new ArrayList<>(permuteSubset(bestPerm, i));
+                if(tempPerms.size() != 0) {
+                    List<Schedule> parsedPerms = new ArrayList<>();
+                    for (Schedule sch : tempPerms) {
+                        Schedule copy = new Schedule(sch);
+                        sch.forEach((job, time) -> copy.put(job, time + copy.getPreviousTime(job)));
+                        parsedPerms.add(copy);
+                    }
 
-                List<Schedule> parsedPerms = new ArrayList<>();
-                for (Schedule sch : tempPerms) {
-                    Schedule copy = new Schedule(sch);
-                    sch.forEach((job, time) -> copy.put(job, time + copy.getPreviousTime(job)));
-                    parsedPerms.add(copy);
+                    JobData output = parseSchedules(parsedPerms);
+                    bestPerm = tempPerms.get(parsedPerms.indexOf(output.getBestSchedule()));
+                    schedules.addAll(parsedPerms);
                 }
-
-                JobData output = parseSchedules(parsedPerms);
-                bestPerm = tempPerms.get(parsedPerms.indexOf(output.getBestSchedule()));
-                schedules.addAll(parsedPerms);
             }
 
         } else if (getProblem().getType() == ShopType.JOB) {
