@@ -88,17 +88,17 @@ public class Bench {
         benchInput = scheduler;
     }
 */
-    @Benchmark
+    //@Benchmark
     public void combine1(){
         List<List<int[]>> out = Lists.cartesianProduct(Arrays.asList(benchInput));
     }
 
-    @Benchmark
+    //@Benchmark
     public void combine2(){
         ArrayList<ArrayList<int[]>> out = findCombinations(benchInput);
     }
 
-    @Benchmark
+    //@Benchmark
     public void combine3(){
         ArrayList<ArrayList<int[]>> out = combine(benchInput);
     }
