@@ -2,6 +2,7 @@ package scheduler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Enumeration for all shop types
@@ -41,6 +42,10 @@ public enum ShopType {
 
     public static ShopType getByName(String n) {
         return vals.get(n);
+    }
+
+    public static ShopType getRandom(){
+        return (ShopType) vals.values().toArray()[new Random().nextInt(vals.size())];
     }
 
 }

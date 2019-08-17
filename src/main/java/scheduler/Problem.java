@@ -34,14 +34,6 @@ public class Problem {
         type = ShopType.FLOW;
     }
 
-    public Problem(int[][] time, int[][] machine, ShopType type) {
-        jobCount = time.length;
-        machineCount = time[0].length;
-        timeMatrix = time;
-        machineMatrix = machine;
-        this.type = type;
-    }
-
     /**
      * Empty constructor with a specific size,
      * to generate a full problem, use the other constructor
