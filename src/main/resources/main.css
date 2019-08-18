@@ -101,6 +101,21 @@
     -fx-alignment : center;
 }
 
+.bench-input {
+    -fx-text-inner-color:  #263238;
+}
+
+.bench-title {
+    -fx-text-inner-color:  #263238;
+    -fx-font-size : 16px;
+    -fx-font-weight : bold;
+}
+
+.bench-header {
+    -fx-text-inner-color:  #263238;
+    -fx-font-size : 16px;
+}
+
 .matrix-label {
     -fx-text-inner-color:  #263238;
     -fx-font-size : 14px;
