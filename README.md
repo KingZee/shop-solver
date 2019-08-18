@@ -1,6 +1,8 @@
 # Shop Solver
 > An application to solve scheduling problems written in Java.
 
+![Demo Animation](https://i.imgur.com/GmPgsV0.jpg)
+
 This library can solve all three types of scheduling problems (Flow-Shop, Job-Shop, and Open-Shop).
 
 Problem and solution space encoding schemes are optimized across all three types with a permutation schedule definition. 
