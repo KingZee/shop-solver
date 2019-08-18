@@ -27,10 +27,10 @@ If you would like to run using IntelliJ's built in runtime, you will need to hav
 ## Roadmap
 
 - [x] Build initial framework.
+- [x] Add benchmarking tools for algorithm comparison.
 - [ ] Add example(s) of local search algorithm(s).
 - [ ] Add example(s) of genetic algorithm(s).
 - [ ] Add integrations for GPU computation (CUDA).
-- [ ] Add benchmarking tools for algorithm comparison.
 
 ## License
 
