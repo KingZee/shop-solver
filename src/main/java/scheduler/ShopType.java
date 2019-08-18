@@ -44,7 +44,7 @@ public enum ShopType {
         return vals.get(n);
     }
 
-    public static ShopType getRandom(){
+    public static ShopType getRandom() {
         return (ShopType) vals.values().toArray()[new Random().nextInt(vals.size())];
     }
 

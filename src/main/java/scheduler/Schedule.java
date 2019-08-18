@@ -125,7 +125,7 @@ public class Schedule extends HashMap<Point, Integer> {
      * @return The previous job Point(n,m?). If it is not found, it tries to find the closest job, or null.
      */
 
-    public Point getPrecedentJob(Point job) { //M1 : J101 J201; M2 : J102 J202; precedent of J202 is J201
+    public Point getPrecedentJob(Point job) {
         int currentIndex = indices.indexOf(job);
         Point precedentJob = null;
         while (currentIndex > 0) {
@@ -162,9 +162,9 @@ public class Schedule extends HashMap<Point, Integer> {
      * @return The largest processing time of a schedule
      */
 
-    public Integer getMaxValue(){
+    public Integer getMaxValue() {
         int val = 0;
-        for(int i = 0; i<size();i++)
+        for (int i = 0; i < size(); i++)
             val = val > getByIndex(i) ? val : getByIndex(i);
         return val;
     }

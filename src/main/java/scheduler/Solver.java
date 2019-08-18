@@ -36,19 +36,19 @@ public abstract class Solver extends Service<List<Schedule>> {
             this.totalSchedules = totalSchedules;
         }
 
-        public int getBestTime() {
+        int getBestTime() {
             return bestTime;
         }
 
-        public int getWorstTime() {
+        int getWorstTime() {
             return worstTime;
         }
 
-        public double getAvgTime() {
+        double getAvgTime() {
             return avgTime;
         }
 
-        public int getTotalSchedules() {
+        int getTotalSchedules() {
             return totalSchedules;
         }
 
@@ -64,6 +64,7 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * Each solver instance is always tied to a problem instance
      * This can be set at instantiation or modified later
+     *
      * @see Problem
      */
     private Problem problem;
@@ -101,19 +102,19 @@ public abstract class Solver extends Service<List<Schedule>> {
                     @Override
                     public void run() {
                         try {
-                            if(currentTask.isDone()) {
+                            if (currentTask.isDone()) {
                                 cancel();
                                 System.gc();
                             }
-                            if(currentTask.isCancelled()) taskThread.stop();
+                            if (currentTask.isCancelled()) taskThread.stop();
                             taskThread.suspend();
                             Thread.sleep(20);
                             taskThread.resume();
-                        } catch (Exception ex){
+                        } catch (Exception ex) {
                             System.out.println(ex);
                         }
                     }
-                },0,50);
+                }, 0, 50);
                 List<Schedule> result = solveMakespan();
                 return result;
             }
@@ -134,8 +135,8 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * Heap's algorithm to generate all permutations of a Schedule
      *
-     * @param map         A single Schedule to generate permutations for
-     * @param n           Length of the Schedule
+     * @param map A single Schedule to generate permutations for
+     * @param n   Length of the Schedule
      * @return List of permuted schedules
      */
     public static List<Schedule> permute(Schedule map, int n) {
@@ -161,8 +162,8 @@ public abstract class Solver extends Service<List<Schedule>> {
     /**
      * Permute operations of a specific job within a schedule
      *
-     * @param map         A single Schedule to generate permutations for
-     * @param jobIndex    Index of the job to permute operations for
+     * @param map      A single Schedule to generate permutations for
+     * @param jobIndex Index of the job to permute operations for
      * @return List of permuted schedules
      */
 
@@ -170,13 +171,13 @@ public abstract class Solver extends Service<List<Schedule>> {
         List<Point> indices = new ArrayList<>(map.getIndices());
         indices.removeIf(point -> point.x != jobIndex);
         Schedule jobs = new Schedule();
-        indices.forEach(point -> jobs.put(point,map.getIndices().indexOf(point)));
-        List<Schedule> permutedJobs = permute(jobs,jobs.size());
+        indices.forEach(point -> jobs.put(point, map.getIndices().indexOf(point)));
+        List<Schedule> permutedJobs = permute(jobs, jobs.size());
         List<Schedule> out = new ArrayList<>();
-        for(Schedule partialSchedule : permutedJobs){
+        for (Schedule partialSchedule : permutedJobs) {
             Schedule outputSchedule = new Schedule(map);
-            for(int i = 0; i<jobs.size(); i++){
-                outputSchedule.getIndices().set(jobs.getByIndex(i),partialSchedule.getIndices().get(i));
+            for (int i = 0; i < jobs.size(); i++) {
+                outputSchedule.getIndices().set(jobs.getByIndex(i), partialSchedule.getIndices().get(i));
             }
             out.add(outputSchedule);
         }
