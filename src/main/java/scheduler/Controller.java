@@ -1,9 +1,8 @@
 package scheduler;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXRadioButton;
-import com.jfoenix.controls.JFXSlider;
-import com.jfoenix.controls.JFXTextField;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.jfoenix.controls.*;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.FXCollections;
@@ -13,6 +12,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -32,6 +32,7 @@ import scheduler.solvers.ExactSolver;
 import scheduler.solvers.QuickSolver;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,20 @@ public class Controller {
     @FXML
     private JFXButton calculateButton;
     @FXML
-    private ToggleGroup algorithms;
+    private ToggleGroup algorithmToggleGroup;
+    @FXML
+    private VBox algorithmSettings;
+    private List<JFXRadioButton> algorithmButtonList = new ArrayList<>();
+
+    //Benchmark boxes
+    @FXML
+    private JFXCheckBox benchmarkCheckbox;
+    @FXML
+    private VBox benchMatrix;
+    @FXML
+    private HBox benchRuns;
+    @FXML
+    private TextField benchJobs, benchMachines;
 
     private List<List<Node>> nodes = new ArrayList<>();  //Keep references to GridPane by indices
     private final int initialRows = 3,
@@ -76,15 +90,26 @@ public class Controller {
     private int cols = initialColumns;
 
     private Problem problem = new Problem(rows - 1, cols - 1);        //The instance of the problem
-    private Map<String, Class<? extends Solver>> algorithmMap = Map.of("Quick Solver", QuickSolver.class,
-            "Exact Solver", ExactSolver.class);
-    private Class activeSolverType;   //Solver currently in use
+    private BiMap<String, Class<? extends Solver>> algorithmMap = HashBiMap.create(Map.of(
+            "Quick Solver", QuickSolver.class,
+            "Exact Solver", ExactSolver.class));
+
+    private Class<? extends Solver> activeSolverType;   //Solver currently in use
+    private List<Class<? extends Solver>> benchSolverTypes = new ArrayList<>(); //Solvers selected for benchmarking
 
     @FXML
     public void initialize() {
-        //Reset value of shopType Input field
         shopType.setText(ShopType.FLOW.getName());
-        updateSolver();
+
+        benchMatrix.setDisable(true);
+        benchRuns.setDisable(true);
+        benchmarkCheckbox.setDisable(!Benchmark.isBenchmarkingSupported());
+
+        activeSolverType = QuickSolver.class;
+        for (Node node : algorithmSettings.getChildren()) {
+            if (node instanceof JFXRadioButton) algorithmButtonList.add((JFXRadioButton) node);
+        }
+
         initGrid();
     }
 
@@ -108,9 +133,20 @@ public class Controller {
     }
 
     @FXML
-    private void updateSolver() {
-        JFXRadioButton selectedRadioButton = (JFXRadioButton) algorithms.getSelectedToggle();
-        activeSolverType = algorithmMap.get(selectedRadioButton.getText());
+    private void updateSolver(Event e) {
+        JFXRadioButton currentButton = (JFXRadioButton) e.getSource();
+        if (benchmarkCheckbox.isSelected()) {
+            if (currentButton.isSelected()) {
+                currentButton.setSelected(true);
+                benchSolverTypes.add(algorithmMap.get(currentButton.getText()));
+            } else {
+                currentButton.setSelected(false);
+                benchSolverTypes.remove(algorithmMap.get(currentButton.getText()));
+            }
+        } else {
+            JFXRadioButton selectedRadioButton = (JFXRadioButton) algorithmToggleGroup.getSelectedToggle();
+            activeSolverType = algorithmMap.get(selectedRadioButton.getText());
+        }
     }
 
     @FXML
@@ -216,6 +252,24 @@ public class Controller {
         return btn;
     }
 
+    private TextFlow textFlow() {
+        TextFlow txt = new TextFlow();
+        txt.setOpaqueInsets(new Insets(6, 0, 0, 0));
+        return txt;
+    }
+
+    private Text benchmarkTitle(String text) {
+        Text txt = new Text(text);
+        txt.getStyleClass().add("bench-title");
+        return txt;
+    }
+
+    private Text benchmarkHeader(String text) {
+        Text txt = new Text(text);
+        txt.getStyleClass().add("bench-header");
+        return txt;
+    }
+
     //endregion
 
     //Row/Column style constraints
@@ -235,6 +289,42 @@ public class Controller {
         colLayout.setMinWidth(0);
         colLayout.setHalignment(HPos.CENTER);
         return colLayout;
+    }
+
+    /*private TableView benchmarkTable(List<Benchmark.SolverData> data){
+        TableView output = new TableView();
+        output.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        output.getColumns().add(new TableColumn<>());
+
+        for(Benchmark.SolverData solverData : data){
+            TableColumn<String,String> column = new TableColumn<>(algorithmMap.inverse().get(solverData.getAlgorithm()));
+            output.getColumns().add(column);
+        }
+
+        return output;
+    }*/
+
+    @FXML
+    private void toggleBenchmarkMode(Event event) {
+        boolean isChecked = benchmarkCheckbox.isSelected();
+        problemGrid.setDisable(isChecked);
+        benchMatrix.setDisable(!isChecked);
+        benchRuns.setDisable(!isChecked);
+
+        if (isChecked) {
+            JFXRadioButton selectedRadioButton = (JFXRadioButton) algorithmToggleGroup.getSelectedToggle();
+            benchSolverTypes.add(algorithmMap.get(selectedRadioButton.getText()));
+
+            algorithmButtonList.forEach(jfxRadioButton -> jfxRadioButton.setToggleGroup(null));
+            calculateButton.setOnAction(this::solveBenchmark);
+        } else {
+            benchSolverTypes.clear();
+            algorithmButtonList.forEach(jfxRadioButton -> jfxRadioButton.setToggleGroup(algorithmToggleGroup));
+
+            JFXRadioButton selectedRadioButton = (JFXRadioButton) algorithmToggleGroup.getSelectedToggle();
+            activeSolverType = algorithmMap.get(selectedRadioButton.getText());
+            calculateButton.setOnAction(this::solveMatrix);
+        }
     }
 
     @FXML
@@ -279,19 +369,83 @@ public class Controller {
         }
     }
 
+    private void solveBenchmark(Event e) {
+        try {
+            int benchmarkRuns = 0;
+            for (Node node : benchRuns.getChildren()) {
+                if (node instanceof TextField) benchmarkRuns = Integer.parseInt(((TextField) node).getText());
+            }
+            int benchmarkJobs = Integer.parseInt(benchJobs.getText());
+            int benchmarkMachines = Integer.parseInt(benchMachines.getText());
+
+            Benchmark bench = new Benchmark(benchmarkRuns, benchmarkJobs, benchmarkMachines, benchSolverTypes);
+            bench.setOnCancelled(this::onCancelled);
+            bench.setOnFailed(this::onFailed);
+            bench.setOnSucceeded(this::onBenchmarkDone);
+            bench.setOnScheduled(this::onQueued);
+            bench.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void onBenchmarkDone(Event event) {
+        resetCalculateButton();
+
+        WorkerStateEvent worker = (WorkerStateEvent) event;
+        List<Benchmark.SolverData> result = (List<Benchmark.SolverData>) worker.getSource().getValue();
+
+        List<Node> children = outputContainer.getChildren();
+        children.clear();
+
+        TextFlow txtflow = textFlow();
+        children.add(txtflow);
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+
+        for (Benchmark.SolverData data : result) {
+            txtflow.getChildren().add(benchmarkTitle(algorithmMap.inverse().get(data.getAlgorithm())));
+
+            txtflow.getChildren().add(outputText("\n"));
+
+            txtflow.getChildren().add(benchmarkHeader("CPU Runtime : "));
+            txtflow.getChildren().add(outputText(""));
+            txtflow.getChildren().add(outputText("Maximum : " + decimalFormat.format(data.getCpuMax() * 1e-9) + "s" + "\t\t" + "Average : " + decimalFormat.format(data.getCpuAverage() * 1e-9) + "s" + "\t\t" + "Minimum : " + decimalFormat.format(data.getCpuMin() * 1e-9) + "s"));
+
+            txtflow.getChildren().add(outputText(""));
+
+            txtflow.getChildren().add(benchmarkHeader("Memory Usage : "));
+            txtflow.getChildren().add(outputText(""));
+            txtflow.getChildren().add(outputText("Maximum : " + decimalFormat.format(data.getMemoryMax()) + "Mb" + "\t\t" + "Average : " + decimalFormat.format(data.getMemoryAverage()) + "Mb" + "\t\t" + "Minimum : " + decimalFormat.format(data.getMemoryMin()) + "Mb"));
+
+            txtflow.getChildren().add(outputText(""));
+
+            txtflow.getChildren().add(benchmarkHeader("Solution time : "));
+            txtflow.getChildren().add(outputText(""));
+            txtflow.getChildren().add(outputText("Shortest : " + data.getBestTime() + "\t\t" + "Average : " + data.getTimeAverage() + "\t\t" + "Minimum : " + data.getWorstTime()));
+
+            txtflow.getChildren().add(outputText(""));
+
+        }
+
+        TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
+        ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
+
+        result.clear();
+        System.gc();
+
+    }
+
     @FXML
     private void solveMatrix(Event e) {
         try {
-            final Solver solver;
-            solver = (Solver) activeSolverType.getConstructor(Problem.class).newInstance(problem);
-            solver.createTask();
+            Solver solver = activeSolverType.getConstructor(Problem.class).newInstance(problem);
             solver.setOnCancelled(this::onCancelled);
             solver.setOnFailed(this::onFailed);
-            solver.setOnSucceeded(this::onSolved);
+            solver.setOnSucceeded(this::onMatrixSolved);
             solver.setOnScheduled(this::onQueued);
             solver.start();
-        } catch (Exception exception) {
-            System.err.println("Illegal Type supplied to solver instance : " + exception);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -303,7 +457,7 @@ public class Controller {
         System.out.println("Event running in background!");
     }
 
-    private void onSolved(Event event) {
+    private void onMatrixSolved(Event event) {
         resetCalculateButton();
 
         WorkerStateEvent worker = (WorkerStateEvent) event;
@@ -311,7 +465,7 @@ public class Controller {
         Solver.JobData data = Solver.parseSchedules(result);
 
 
-        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(new Schedule(data.getBestSchedule()), problem);
+        List<XYChart.Series<Number, String>> chartData = JobChart.MapToChart(data.getBestSchedule(), problem);
 
         NumberAxis xAxis = new NumberAxis();
         CategoryAxis yAxis = new CategoryAxis();
@@ -335,22 +489,19 @@ public class Controller {
         VBox.setVgrow(chart, Priority.ALWAYS);
 
         List<Node> children = outputContainer.getChildren();
+        children.clear();
 
-        if (children.get(0) instanceof JobChart) {
-            children.set(0, chart);
-            children.set(1, generateLegend());
-        } else {
-            children.add(0, chart);
-            children.add(1, generateLegend());
-        }
+        children.add(0, chart);
+        children.add(1, generateLegend());
 
-        //TextFlow to display statistics
-        ((TextFlow) children.get(2)).getChildren().clear();
-        ((TextFlow) children.get(2)).getChildren().add(outputText("Schedules calculated : " + data.getTotalSchedules()));
-        ((TextFlow) children.get(2)).getChildren().add(outputText(""));
-        ((TextFlow) children.get(2)).getChildren().add(outputText("Best Time : " + data.getBestTime()));
-        ((TextFlow) children.get(2)).getChildren().add(outputText("Worst Time : " + data.getWorstTime()));
-        ((TextFlow) children.get(2)).getChildren().add(outputText("Average Time : " + Math.round(data.getAvgTime() * 100d) / 100d));
+        TextFlow txtflow = textFlow();
+        children.add(2, txtflow);
+
+        txtflow.getChildren().add(outputText("Schedules calculated : " + data.getTotalSchedules()));
+        txtflow.getChildren().add(outputText(""));
+        txtflow.getChildren().add(outputText("Best Time : " + data.getBestTime()));
+        txtflow.getChildren().add(outputText("Worst Time : " + data.getWorstTime()));
+        txtflow.getChildren().add(outputText("Average Time : " + Math.round(data.getAvgTime() * 100d) / 100d));
 
         TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
@@ -359,27 +510,22 @@ public class Controller {
         System.gc();
     }
 
-    private void onFailed(Event event){
+    private void onFailed(Event event) {
         WorkerStateEvent worker = (WorkerStateEvent) event;
         Throwable error = worker.getSource().getException();
 
         List<Node> children = outputContainer.getChildren();
-        while (children.size() > 1){
-            Node node = children.get(0);
-            if(!(node instanceof TextFlow)){
-                children.remove(node);
-            }
-        }
+        children.clear();
+        TextFlow textnode = textFlow();
+        children.add(textnode);
 
-        TextFlow textnode = (TextFlow) children.get(0);
-        textnode.getChildren().clear();
-
-        if(error instanceof IllegalArgumentException && error.getMessage().contains("Cartesian product too large")){
+        if (error instanceof IllegalArgumentException && error.getMessage().contains("Cartesian product too large")) {
             textnode.getChildren().add(outputText("Error : Matrix is too big to be solved by this solver."));
-        } else if(error instanceof OutOfMemoryError){
+        } else if (error instanceof OutOfMemoryError) {
             textnode.getChildren().add(outputText("Error : Program ran out of memory."));
         } else {
-            textnode.getChildren().add(outputText("Error : "+error.getLocalizedMessage()));
+            error.printStackTrace(System.out);
+            textnode.getChildren().add(outputText("Error : " + error.getLocalizedMessage()));
         }
 
         resetCalculateButton();
@@ -413,7 +559,10 @@ public class Controller {
         calculateButton.textProperty().setValue("Calculate");
         calculateButton.setContentDisplay(ContentDisplay.TEXT_ONLY);
         calculateButton.getStyleClass().remove("processing");
-        calculateButton.setOnAction(this::solveMatrix);
+        if (benchmarkCheckbox.isSelected())
+            calculateButton.setOnAction(this::solveBenchmark);
+        else
+            calculateButton.setOnAction(this::solveMatrix);
     }
 
     private void updateTimeMatrix(Observable txtprop, String old, String str) {
@@ -433,13 +582,13 @@ public class Controller {
     }
 
     private void updateMachineMatrix(ActionEvent e) {
-        Node butt = (JFXButton) e.getSource();
+        JFXButton butt = (JFXButton) e.getSource();
         Node cell = butt.getParent();
         for (List row : nodes) {
             if (row.contains(cell)) {
-                int val = Integer.parseInt(((JFXButton) butt).getText().substring(1));
+                int val = Integer.parseInt(butt.getText().substring(1));
                 int newVal = val % problem.machineCount;
-                ((JFXButton) butt).setText("M" + (newVal + 1));
+                butt.setText("M" + (newVal + 1));
                 problem.updateMachine(nodes.indexOf(row), row.indexOf(cell), newVal);
             }
         }
