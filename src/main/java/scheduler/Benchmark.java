@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Benchmark extends Service<List<Benchmark.SolverData>> {
 
-    class SolverData {
+    static class SolverData {
         private Class<? extends Solver> algorithm;
         private List<BenchmarkData> benchmarkData = new ArrayList<>();
         private static final long MEGABYTE = 1024L * 1024L;
