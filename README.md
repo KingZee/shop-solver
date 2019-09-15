@@ -40,6 +40,7 @@ As it tests every UI use-case, kindly do not move the mouse while the tests are 
 
 - [x] Build initial framework.
 - [x] Add benchmarking tools for algorithm comparison.
+- [x] Add test suite.
 - [ ] Add example(s) of local search algorithm(s).
 - [ ] Add example(s) of genetic algorithm(s).
 - [ ] Add integrations for GPU computation (CUDA).
