@@ -14,9 +14,9 @@ It is extremely easy to implement any "Solver" for any of these types by inherit
 
 This project is built with JDK11 & Maven. It uses JavaFX 11 with some [JFoenix 9](https://github.com/jfoenixadmin/JFoenix) components for UI. JMH toolkit is included for micro-benchmarks.
 
-## Troubleshooting :
+## Installation :
 
-After installing dependencies, the project can be run through the javafx-maven-plugin :
+After automatically installing dependencies through Maven, the project can be run through the javafx-maven-plugin :
 
     mvn clean
     mvn javafx:compile
@@ -25,6 +25,16 @@ After installing dependencies, the project can be run through the javafx-maven-p
 If you would like to run using IntelliJ's built in runtime, you will need to have JavaFX 11 installed, and include the VM directives : 
 
     --module-path $PATH_TO_JAVAFX --add-modules javafx.controls,javafx.fxml
+
+## Testing : 
+
+To run the test suite : 
+
+    mvn clean
+    mvn surefire:test
+
+The tests are done through the [TestFX](https://github.com/TestFX/TestFX) package. 
+As it tests every UI use-case, kindly do not move the mouse while the tests are running. It takes one minute on average.
 
 ## Roadmap
 
