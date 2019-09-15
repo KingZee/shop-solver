@@ -22,20 +22,20 @@
       </HBox>
    <HBox fx:id="main" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
          style="-fx-background-color: #263238;" VBox.vgrow="ALWAYS">
-      <Accordion expandedPane="$problemContainer" HBox.hgrow="ALWAYS">
+      <Accordion expandedPane="$problemPane" HBox.hgrow="ALWAYS">
          <panes>
-            <TitledPane fx:id="problemContainer" text="  Problem Parameters:">
+            <TitledPane fx:id="problemPane" text="  Problem Parameters:">
                <font>
                   <Font size="14.0"/>
                </font>
                <AnchorPane minHeight="0.0" minWidth="0.0">
                   <HBox layoutX="32.2" layoutY="32.2" minHeight="0.0" minWidth="0.0" AnchorPane.leftAnchor="10.0"
                         AnchorPane.topAnchor="1.0">
-                     <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="${problemContainer.width * 0.7}">
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="${problemPane.width * 0.7}">
                         <GridPane fx:id="problemGrid" minHeight="0.0" minWidth="0.0">
                         </GridPane>
                      </AnchorPane>
-                     <VBox fx:id="algorithmSettings" maxHeight="${problemContainer.height * 0.9}"
+                     <VBox fx:id="algorithmSettings" maxHeight="${problemPane.height * 0.9}"
                            HBox.hgrow="ALWAYS">
                         <Label text="Algorithm settings :" textFill="#263238" VBox.vgrow="ALWAYS">
                            <VBox.margin>
@@ -63,7 +63,7 @@
                               <Font size="14.0"/>
                            </font>
                         </JFXRadioButton>
-                        <Region prefHeight="${problemContainer.height * 0.7}" VBox.vgrow="ALWAYS"/>
+                        <Region prefHeight="${problemPane.height * 0.7}" VBox.vgrow="ALWAYS"/>
                         <VBox fx:id="benchMatrix">
                            <Label text="Max Matrix Size :" textFill="#263238">
                               <font>
@@ -112,7 +112,7 @@
                   </HBox>
                </AnchorPane>
             </TitledPane>
-            <TitledPane text="  Output:">
+            <TitledPane fx:id="outputPane" text="  Output:">
                <font>
                   <Font size="14.0"/>
                </font>
@@ -266,7 +266,7 @@
                </JFXTextField>
             </HBox>
          </VBox>
-         <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#generateMatrix"
+         <JFXButton fx:id="generateMatrix" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#generateMatrix"
                     style="-fx-background-color: #ffecc2;" text="Generate Matrix" textFill="#263238"
                     VBox.vgrow="ALWAYS">
             <font>
@@ -280,7 +280,7 @@
             <VBox.margin>
                <Insets/>
             </VBox.margin>
-            <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#clearMatrix"
+            <JFXButton fx:id="clearMatrix" alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#clearMatrix"
                        style="-fx-background-color: #fff7e6;" text="Clear" textFill="#263238" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets right="4.0"/>
@@ -289,7 +289,7 @@
                   <Font size="14.0"/>
                </font>
             </JFXButton>
-            <JFXButton alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#resetMatrix"
+            <JFXButton fx:id="resetMatrix" alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#resetMatrix"
                        style="-fx-background-color: #fff7e6;" text="Reset" textFill="#263238" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="4.0"/>

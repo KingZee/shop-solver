@@ -27,6 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import org.apache.commons.math3.exception.NullArgumentException;
 import scheduler.controller.JobChart;
 import scheduler.solvers.ExactSolver;
 import scheduler.solvers.QuickSolver;
@@ -34,54 +35,73 @@ import scheduler.solvers.QuickSolver;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class Controller {
     //Main container
     @FXML
-    private HBox main;
+    public HBox main;
 
     //Top title bar for close/minimise/title Label
     @FXML
-    private javafx.scene.control.Button closeButton;
+    public javafx.scene.control.Button closeButton;
     @FXML
-    private javafx.scene.control.Button miniButton;
+    public javafx.scene.control.Button miniButton;
     @FXML
-    private HBox titleBar;
+    public HBox titleBar;
+
+    //TitledPanes for easier testing access
+    @FXML
+    public TitledPane problemPane;
+    @FXML
+    public TitledPane outputPane;
 
     //Main pane : Problem grid, and output VBox
     @FXML
-    private GridPane problemGrid;
+    public GridPane problemGrid;
     @FXML
-    private VBox outputContainer;
+    public VBox outputContainer;
 
     //Menu buttons / slider references
     @FXML
-    private JFXTextField shopType;
+    public VBox menu;
     @FXML
-    private JFXSlider zeroPercent;
+    public JFXTextField shopType;
     @FXML
-    private JFXTextField leftInterval;
+    public JFXButton rightShopType;
     @FXML
-    private JFXTextField rightInterval;
+    public JFXButton leftShopType;
     @FXML
-    private JFXButton calculateButton;
+    public JFXSlider zeroPercent;
     @FXML
-    private ToggleGroup algorithmToggleGroup;
+    public JFXTextField leftInterval;
     @FXML
-    private VBox algorithmSettings;
-    private List<JFXRadioButton> algorithmButtonList = new ArrayList<>();
+    public JFXTextField rightInterval;
+    @FXML
+    public JFXButton generateMatrix;
+    @FXML
+    public JFXButton clearMatrix;
+    @FXML
+    public JFXButton resetMatrix;
+    @FXML
+    public JFXButton calculateButton;
+    @FXML
+    public ToggleGroup algorithmToggleGroup;
+    @FXML
+    public VBox algorithmSettings;
+    public List<JFXRadioButton> algorithmButtonList = new ArrayList<>();
 
     //Benchmark boxes
     @FXML
-    private JFXCheckBox benchmarkCheckbox;
+    public JFXCheckBox benchmarkCheckbox;
     @FXML
-    private VBox benchMatrix;
+    public VBox benchMatrix;
     @FXML
-    private HBox benchRuns;
+    public HBox benchRuns;
     @FXML
-    private TextField benchJobs, benchMachines;
+    public TextField benchJobs, benchMachines;
 
     private List<List<Node>> nodes = new ArrayList<>();  //Keep references to GridPane by indices
     private final int initialRows = 3,
@@ -98,7 +118,7 @@ public class Controller {
     private List<Class<? extends Solver>> benchSolverTypes = new ArrayList<>(); //Solvers selected for benchmarking
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         shopType.setText(ShopType.FLOW.getName());
 
         benchMatrix.setDisable(true);
@@ -188,7 +208,7 @@ public class Controller {
     }
 
     @FXML
-    public void clearMatrix() {
+    private void clearMatrix() {
         for (List<Node> row : nodes) {
             for (Node cell : row) {
                 for (Node content : ((VBox) cell).getChildren()) {
@@ -200,7 +220,7 @@ public class Controller {
     }
 
     @FXML
-    public void resetMatrix() {
+    private void resetMatrix() {
 
         problemGrid.getChildren().clear();
         rows = initialRows;
@@ -255,6 +275,7 @@ public class Controller {
     private TextFlow textFlow() {
         TextFlow txt = new TextFlow();
         txt.setOpaqueInsets(new Insets(6, 0, 0, 0));
+        txt.getStyleClass().add("textflow");
         return txt;
     }
 
@@ -342,10 +363,16 @@ public class Controller {
 
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = 0; j < nodes.get(i).size(); j++) {
-                for (Node txtbox : ((Pane) nodes.get(i).get(j)).getChildren()) {
-                    if (txtbox instanceof TextField) {
-                        ((TextField) txtbox).setText(Integer.toString(problem.getTimeMatrix()[i][j]));
+                Iterator<Node> iterator = ((Pane) nodes.get(i).get(j)).getChildren().iterator();
+
+                while (iterator.hasNext()) {
+                    Node node = iterator.next();
+                    if (node instanceof TextField) {
+                        ((TextField) node).setText(Integer.toString(problem.getTimeMatrix()[i][j]));
                     }
+
+                    if (node instanceof JFXButton)
+                        iterator.remove();
                 }
             }
         }
@@ -378,6 +405,7 @@ public class Controller {
             int benchmarkJobs = Integer.parseInt(benchJobs.getText());
             int benchmarkMachines = Integer.parseInt(benchMachines.getText());
 
+            if(benchSolverTypes.size() == 0) throw new NullArgumentException();
             Benchmark bench = new Benchmark(benchmarkRuns, benchmarkJobs, benchmarkMachines, benchSolverTypes);
             bench.setOnCancelled(this::onCancelled);
             bench.setOnFailed(this::onFailed);
@@ -385,8 +413,28 @@ public class Controller {
             bench.setOnScheduled(this::onQueued);
             bench.start();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            catchBenchmark(ex);
         }
+    }
+
+    private void catchBenchmark(Exception error) {
+        List<Node> children = outputContainer.getChildren();
+        children.clear();
+        TextFlow textnode = textFlow();
+        children.add(textnode);
+
+        if (error instanceof NumberFormatException) {
+            textnode.getChildren().add(outputText("Error : Please input a valid number for the benchmark settings."));
+        } else if (error instanceof NullArgumentException) {
+            textnode.getChildren().add(outputText("Error : Please select one or more algorithms to benchmark."));
+        }else{
+            error.printStackTrace(System.out);
+            textnode.getChildren().add(outputText("Error : " + error.getLocalizedMessage()));
+        }
+
+        resetCalculateButton();
+        TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
+        ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
     }
 
     private void onBenchmarkDone(Event event) {
@@ -521,6 +569,8 @@ public class Controller {
 
         if (error instanceof IllegalArgumentException && error.getMessage().contains("Cartesian product too large")) {
             textnode.getChildren().add(outputText("Error : Matrix is too big to be solved by this solver."));
+        } else if(error instanceof IllegalArgumentException && error.getMessage().contains("bound must be greater than origin")) {
+            textnode.getChildren().add(outputText("Error : Please input a valid number for the benchmark settings."));
         } else if (error instanceof OutOfMemoryError) {
             textnode.getChildren().add(outputText("Error : Program ran out of memory."));
         } else {
@@ -570,6 +620,7 @@ public class Controller {
         try {
             val = Integer.parseInt(str);
         } catch (Exception e) {
+            ((TextField) ((ReadOnlyProperty) txtprop).getBean()).setText("");
             return;
         }
 
