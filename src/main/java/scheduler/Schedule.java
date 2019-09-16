@@ -12,7 +12,6 @@ import java.util.function.BiConsumer;
  * It's stored as a HashMap of Points ( x : Job index, y : Machine index)
  * A local list variable is added to store the scheduling
  */
-
 public class Schedule extends HashMap<Point, Integer> {
     private java.util.List<Point> indices = new ArrayList<>();
 
@@ -21,7 +20,6 @@ public class Schedule extends HashMap<Point, Integer> {
      *
      * @param m Schedule to copy
      */
-
     public Schedule(Schedule m) {
         m.forEach(this::put);
         this.setIndices(m.getIndices());
@@ -32,9 +30,8 @@ public class Schedule extends HashMap<Point, Integer> {
     }
 
     /**
-     * Iterates map by order of schedule, returning key & value
+     * Iterates map by order of schedule, returning key &amp; value
      */
-
     @Override
     public void forEach(BiConsumer<? super Point, ? super Integer> action) {
         for (int i = 0; i < indices.size(); i++)
@@ -48,7 +45,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param value Processing time of specified job
      * @return the previous value associated with the key, or null if there was no mapping
      */
-
     @Override
     public Integer put(Point key, Integer value) {
         if (this.get(key) == null)
@@ -67,7 +63,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param list List of schedules to concatenate
      * @return Single concatenated result
      */
-
     public static Schedule concat(Collection<? extends Schedule> list) {
         Schedule out = new Schedule();
         list.forEach(out::putAll);
@@ -81,7 +76,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param value Processing time to replace with
      * @return Old value that was replaced
      */
-
     public Integer putByIndex(Integer i, Integer value) {
         return this.put(indices.get(i), value);
     }
@@ -92,7 +86,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param i Index of job to get
      * @return Point representation of the job
      */
-
     public Integer getByIndex(Integer i) {
         return this.get(indices.get(i));
     }
@@ -104,7 +97,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @return The job being executed before this one, job Point(n?,m).
      * If it is not found, it tries to find the closest job, or returns null.
      */
-
     public Point getPreviousJob(Point job) {
         int currentIndex = indices.indexOf(job);
         Point previousJob = null;
@@ -124,7 +116,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param job A Job represented as Point(n,m)
      * @return The previous job Point(n,m?). If it is not found, it tries to find the closest job, or null.
      */
-
     public Point getPrecedentJob(Point job) {
         int currentIndex = indices.indexOf(job);
         Point precedentJob = null;
@@ -145,7 +136,6 @@ public class Schedule extends HashMap<Point, Integer> {
      * @param job Job (jobIndex, machineIndex)
      * @return Processing time of preceding blocking task
      */
-
     public int getPreviousTime(Point job) {
         Integer precedent = this.get(this.getPrecedentJob(job));
         Integer previous = this.get(this.getPreviousJob(job));
@@ -161,7 +151,6 @@ public class Schedule extends HashMap<Point, Integer> {
      *
      * @return The largest processing time of a schedule
      */
-
     public Integer getMaxValue() {
         int val = 0;
         for (int i = 0; i < size(); i++)
@@ -174,7 +163,6 @@ public class Schedule extends HashMap<Point, Integer> {
      *
      * @return a list of ordered jobs
      */
-
     public java.util.List<Point> getIndices() {
         return indices;
     }
@@ -184,7 +172,6 @@ public class Schedule extends HashMap<Point, Integer> {
      *
      * @param indices new list of ordered jobs
      */
-
     public void setIndices(List<Point> indices) {
         this.indices = new ArrayList<>(indices);
     }

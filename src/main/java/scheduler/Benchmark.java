@@ -12,8 +12,15 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Class for Benchmarking multiple algorithms
+ * It also inherits from Service as to run in the background
+ */
 public class Benchmark extends Service<List<Benchmark.SolverData>> {
 
+    /**
+     * Local class to represent benchmark information about each Solver instance
+     */
     static class SolverData {
         private Class<? extends Solver> algorithm;
         private List<BenchmarkData> benchmarkData = new ArrayList<>();
@@ -96,6 +103,12 @@ public class Benchmark extends Service<List<Benchmark.SolverData>> {
         this.solverList = solvers;
     }
 
+
+    /**
+     * Boolean check to see if the machine supports accurate measuring of CPU time for any thread
+     * @return boolean Does it support measuring CPU time?
+     * @see ThreadMXBean#isThreadCpuTimeSupported()
+     */
     public static boolean isBenchmarkingSupported() {
         if (!threadManager.isThreadCpuTimeSupported())
             return false;
@@ -104,6 +117,11 @@ public class Benchmark extends Service<List<Benchmark.SolverData>> {
         return threadManager.isThreadCpuTimeEnabled();
     }
 
+    /**
+     * This creates the task that benchmarks the algorithms
+     *
+     * @return task that will resolve with the benchmark if succeeded
+     */
     @Override
     protected Task<List<SolverData>> createTask() {
         return new Task<List<SolverData>>() {
@@ -172,6 +190,13 @@ public class Benchmark extends Service<List<Benchmark.SolverData>> {
         };
     }
 
+    /**
+     * As each algorithm benchmark runs on its own thread,
+     * we define our own wrapper for the Task that holds this benchmark
+     *
+     * @return task that will be managed by the benchmarking method
+     * @see Benchmark#createTask()
+     */
     private Task<BenchmarkData> benchmarkSolver(Solver solver) {
         return new Task<>() {
             private Thread taskThread;

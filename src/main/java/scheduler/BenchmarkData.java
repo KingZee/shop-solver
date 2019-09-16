@@ -2,6 +2,11 @@ package scheduler;
 
 import java.lang.management.ThreadInfo;
 
+/**
+ * Class that holds benchmark information for a single problem instance
+ * It is public as a benchmark is multiple problem instances for multiple algorithms.
+ * @see Benchmark.SolverData
+ */
 public class BenchmarkData {
 
     private Problem problem;

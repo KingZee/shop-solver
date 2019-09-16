@@ -19,8 +19,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Custom extension of JavaFX Chart class to be able to display jobs/machines in a well formatted graph
+ * @param <X> x-Axis type
+ * @param <Y> y-Axis type
+ */
 public class JobChart<X, Y> extends XYChart<X, Y> {
 
+    /**
+     * Method that parses a Schedule &amp; problem instances,
+     * and returns a Series instance with coordinates used to draw the chart
+     * @param schedule Schedule containing a single solution to render
+     * @param problem Problem containing all initial processing times
+     * @return A list of Series to render for each machine
+     */
     public static List<Series<Number, String>> MapToChart(Schedule schedule, Problem problem) {  //List for end times & job indices
         List<Series<Number, String>> chart = new ArrayList<>();                                       //Array for job processing times
         int[][] timeMatrix = problem.getTimeMatrix();
@@ -57,17 +69,26 @@ public class JobChart<X, Y> extends XYChart<X, Y> {
         setData(data);
     }
 
+    /**
+     * Called when a data item has been added.
+     */
     @Override
     protected void dataItemAdded(Series series, int itemIndex, Data item) {
         getPlotChildren().add(item.getNode());
     }
 
+    /**
+     * Called when a data item has been removed.
+     */
     @Override
     protected void dataItemRemoved(Data item, Series series) {
         getPlotChildren().remove(item.getNode());
         removeDataItemFromDisplay(series, item);
     }
 
+    /**
+     * Called when a full series has been added.
+     */
     @Override
     protected void seriesAdded(Series series, int seriesIndex) {
         for (int j = 0; j < series.getData().size(); j++) {
@@ -76,6 +97,9 @@ public class JobChart<X, Y> extends XYChart<X, Y> {
         }
     }
 
+    /**
+     * Called when a full series has been removed.
+     */
     @Override
     protected void seriesRemoved(Series series) {
         for (Object data : series.getData()) {
@@ -84,6 +108,9 @@ public class JobChart<X, Y> extends XYChart<X, Y> {
         removeSeriesFromDisplay(series);
     }
 
+    /**
+     * Called before rendering when the class is instantiated.
+     */
     @Override
     protected void layoutPlotChildren() {
         final double unitHeight = (getHeight() - 20) / (double) (getData().size() * 2);

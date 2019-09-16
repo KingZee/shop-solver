@@ -39,6 +39,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Main Controller class for binding UI elements to methods &amp; variables
+ */
 public class Controller {
     //Main container
     @FXML

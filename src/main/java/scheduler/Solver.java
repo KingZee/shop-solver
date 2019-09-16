@@ -166,7 +166,6 @@ public abstract class Solver extends Service<List<Schedule>> {
      * @param jobIndex Index of the job to permute operations for
      * @return List of permuted schedules
      */
-
     public static List<Schedule> permuteSubset(Schedule map, int jobIndex) {
         List<Point> indices = new ArrayList<>(map.getIndices());
         indices.removeIf(point -> point.x != jobIndex);
@@ -251,7 +250,6 @@ public abstract class Solver extends Service<List<Schedule>> {
      * @param schedules List of schedules (solution space)
      * @return JobData structure
      */
-
     public static JobData parseSchedules(List<Schedule> schedules) {
         final int totalSchedules = schedules.size();
         int worst = 0, best = Integer.MAX_VALUE;

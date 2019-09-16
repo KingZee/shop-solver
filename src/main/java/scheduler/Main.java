@@ -10,6 +10,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Main JavaFX application
+ */
 public class Main extends Application {
 
     @Override
@@ -20,8 +23,6 @@ public class Main extends Application {
 
         Scene scene = new Scene(root, screen.getWidth() / 1.35, screen.getHeight() / 1.25);
         scene.setFill(Color.TRANSPARENT);
-
-        //primaryStage.setTitle("Hello World");
 
         primaryStage.setY(screen.getHeight() * 0.11);
         primaryStage.setX(screen.getWidth() * 0.18);

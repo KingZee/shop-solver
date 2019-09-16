@@ -24,10 +24,18 @@ public enum ShopType {
         }
     }
 
+    /**
+     * Method to get the next enum of this instance
+     * @return ShopType enum
+     */
     public ShopType next() {
         return (ShopType) vals.values().toArray()[(this.ordinal() + 1) % vals.size()];
     }
 
+    /**
+     * Method to get the previous enum of this instance
+     * @return ShopType enum
+     */
     public ShopType prev() {
         return (ShopType) vals.values().toArray()[((this.ordinal() - 1) + vals.size()) % vals.size()];
     }
@@ -36,14 +44,28 @@ public enum ShopType {
         this.name = n;
     }
 
+    /**
+     * Method to get the name associated with this shop type
+     * @return String name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Reverse lookup the enum instance by its string identifier
+     * @param n name of shop type to lookup
+     * @return ShopType enum
+     */
     public static ShopType getByName(String n) {
         return vals.get(n);
     }
 
+    /**
+     * Returns a random shop type instance,
+     * useful for benchmarking
+     * @return ShopType enum
+     */
     public static ShopType getRandom() {
         return (ShopType) vals.values().toArray()[new Random().nextInt(vals.size())];
     }

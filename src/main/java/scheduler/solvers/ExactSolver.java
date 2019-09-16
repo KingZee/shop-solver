@@ -10,6 +10,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An exact solver that iterates through each problem's solution space
+ */
 public class ExactSolver extends Solver {
 
     public ExactSolver(Problem prb) {

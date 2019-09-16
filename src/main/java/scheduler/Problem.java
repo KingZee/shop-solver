@@ -60,7 +60,6 @@ public class Problem {
      * @param zeroChance   Chance of an operation to be empty
      * @see ShopType
      */
-
     public Problem(int jobs, int machines, ShopType type, Point timeInterval, double zeroChance) {
         int[][] outTime = new int[jobs][machines];
         int[][] outMx = new int[jobs][machines];
@@ -116,25 +115,26 @@ public class Problem {
      * @param colIndex Machine Index
      * @param value    Order value
      */
-
     public void updateMachine(int rowIndex, int colIndex, int value) {
         if (value > machineCount) throw new ArrayIndexOutOfBoundsException();
         machineMatrix[rowIndex][colIndex] = value;
     }
 
+    /**
+     * Implementation of Fisher-Yates shuffle for array
+     * @param ar Array to be shuffled
+     * @return shuffled Array
+     */
     // Implementing Fisher–Yates shuffle
     private static int[] shuffleArray(int[] ar) {
-        // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
-            // Simple swap
             int a = ar[index];
             ar[index] = ar[i];
             ar[i] = a;
         }
         return ar;
     }
-
 
 }

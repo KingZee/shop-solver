@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * A solver implementation that solves problems heuristically
+ */
 public class QuickSolver extends Solver {
 
     public QuickSolver(Problem prb) {
