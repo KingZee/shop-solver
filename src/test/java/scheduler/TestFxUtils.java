@@ -6,16 +6,16 @@ import javafx.scene.Parent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestFxUtils {
+class TestFxUtils {
 
-    public static boolean hasItemType(List nodeList, Class<? extends Node> type) {
+    static boolean hasItemType(List nodeList, Class<? extends Node> type) {
         for (Object item : nodeList) {
             if (type.isAssignableFrom(item.getClass())) return true;
         }
         return false;
     }
 
-    public static <T extends Parent> List<Node> fullChildren(T parent) {
+    static <T extends Parent> List<Node> fullChildren(T parent) {
         return fullChildren(parent, new ArrayList<>());
     }
 
