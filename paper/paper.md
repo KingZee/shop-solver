@@ -16,7 +16,7 @@ authors:
     orcid: 0000-0002-3700-764X
     affiliation: 1
   - name: Alami Semma
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0001-6145-6122
     affiliation: 1
 affiliations:
  - name: Laboratoire d’Ingénierie Management Industriel et Innovation (IMMI), Faculté des Sciences et Techniques – Université Hassan I. Settat, Morocco
