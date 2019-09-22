@@ -35,7 +35,7 @@ Our software is written in Java, and provides a simple structure for researchers
 
 # Problem definition
 
-There are three types of scheduling problems : Flow-shop, job-shop, and open-shop scheduling. Each one of them has many subsets and variations, (which are generally quite more complex, making them prone to anomalies and edge cases [@Panwalkar2020; Rustogi2013]) but we are going to restrict the scope of our definition at problems with fixed, known-beforehand processing times, that will execute on a single available machine, with no setup-times, due dates or release dates. They remain NP-hard problems even with these constraints [@applegate1991computational].
+There are three types of scheduling problems : Flow-shop, job-shop, and open-shop scheduling. Each one of them has many subsets and variations, (which are generally quite more complex, making them prone to anomalies and edge cases [@Panwalkar2020; @Rustogi2013]) but we are going to restrict the scope of our definition at problems with fixed, known-beforehand processing times, that will execute on a single available machine, with no setup-times, due dates or release dates. They remain NP-hard problems even with these constraints [@applegate1991computational].
 
 We have a set of $n$ jobs $J_1, J_2, ..., J_n$. Within each job there is a set of operations $O_1, O_2, ..., O_m$ that need to be executed on $m$ machines $M_1, M_2, ..., M_m$. These different types of problems have the optimization objective, and some constraints in common:
 
