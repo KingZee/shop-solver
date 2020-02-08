@@ -221,7 +221,7 @@ public class Benchmark extends Service<List<Benchmark.SolverData>> {
                             Thread.sleep(20);
                             taskThread.resume();
                         } catch (Exception ex) {
-                            ex.printStackTrace(System.out);
+                            ex.printStackTrace(System.err);
                         }
                     }
                 }, 0, 50);

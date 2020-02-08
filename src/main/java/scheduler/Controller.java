@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
@@ -49,9 +50,9 @@ public class Controller {
 
     //Top title bar for close/minimise/title Label
     @FXML
-    public javafx.scene.control.Button closeButton;
+    public Button closeButton;
     @FXML
-    public javafx.scene.control.Button miniButton;
+    public Button miniButton;
     @FXML
     public HBox titleBar;
 
@@ -383,7 +384,7 @@ public class Controller {
         if (ShopType.getByName(shopType.getText()) == ShopType.JOB) {
             for (int i = 0; i < nodes.size(); i++) {
                 for (int j = 0; j < nodes.get(i).size(); j++) {
-                    VBox cell = ((VBox) nodes.get(i).get(j));
+                    VBox cell = (VBox) nodes.get(i).get(j);
                     for (Node box : cell.getChildren()) {
                         if (box instanceof TextField) {
                             ((TextField) box).setText(Integer.toString(problem.getTimeMatrix()[i][j]));
@@ -496,16 +497,15 @@ public class Controller {
             solver.setOnScheduled(this::onQueued);
             solver.start();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 
     private void onQueued(Event event) {
-        calculateButton.setOnAction((e -> ((WorkerStateEvent) event).getSource().cancel()));
+        calculateButton.setOnAction(e -> ((WorkerStateEvent) event).getSource().cancel());
         calculateButton.getStyleClass().add("processing");
         calculateButton.textProperty().setValue("Cancel...");
         calculateButton.setContentDisplay(ContentDisplay.BOTTOM);
-        System.out.println("Event running in background!");
     }
 
     private void onMatrixSolved(Event event) {
@@ -584,13 +584,10 @@ public class Controller {
         resetCalculateButton();
         TitledPane out = ((Accordion) main.getChildren().get(0)).getPanes().get(1);
         ((Accordion) main.getChildren().get(0)).setExpandedPane(out);
-        System.out.println("Event failed!");
     }
 
     private void onCancelled(Event event) {
-        WorkerStateEvent worker = (WorkerStateEvent) event;
         resetCalculateButton();
-        System.out.println("Event canceled!");
     }
 
     //Returns Chart Legend

@@ -125,28 +125,26 @@ public class JobChart<X, Y> extends XYChart<X, Y> {
                 }
                 Node block = item.getNode();
                 Rectangle region;
-                if (block != null) {
-                    if (block instanceof StackPane) {
-                        StackPane container = (StackPane) block;
-                        if (container.getShape() == null) {
-                            region = new Rectangle((int) item.getExtraValue(), unitHeight);
-                        } else if (container.getShape() instanceof Rectangle) {
-                            region = (Rectangle) container.getShape();
-                        } else {
-                            return;
-                        }
-                        region.setWidth((int) item.getExtraValue() * ((getXAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getXAxis()).getScale()) : 1));
-                        region.setHeight(unitHeight * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1));
-                        y -= unitHeight / 2.0;
-
-                        container.setShape(region);
-                        container.setScaleShape(false);
-                        container.setCenterShape(false);
-                        container.setCacheShape(false);
-
-                        block.setLayoutX(x);
-                        block.setLayoutY(y);
+                if (block instanceof StackPane) {
+                    StackPane container = (StackPane) block;
+                    if (container.getShape() == null) {
+                        region = new Rectangle((int) item.getExtraValue(), unitHeight);
+                    } else if (container.getShape() instanceof Rectangle) {
+                        region = (Rectangle) container.getShape();
+                    } else {
+                        return;
                     }
+                    region.setWidth((int) item.getExtraValue() * (getXAxis() instanceof NumberAxis ? Math.abs(((NumberAxis) getXAxis()).getScale()) : 1));
+                    region.setHeight(unitHeight * (getYAxis() instanceof NumberAxis ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1));
+                    y -= unitHeight / 2.0;
+
+                    container.setShape(region);
+                    container.setScaleShape(false);
+                    container.setCenterShape(false);
+                    container.setCacheShape(false);
+
+                    block.setLayoutX(x);
+                    block.setLayoutY(y);
                 }
             }
         }

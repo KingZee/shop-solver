@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
  * A local list variable is added to store the scheduling
  */
 public class Schedule extends HashMap<Point, Integer> {
-    private java.util.List<Point> indices = new ArrayList<>();
+    private List<Point> indices = new ArrayList<>();
 
     /**
      * Create a copy of an existing schedule
@@ -163,7 +163,7 @@ public class Schedule extends HashMap<Point, Integer> {
      *
      * @return a list of ordered jobs
      */
-    public java.util.List<Point> getIndices() {
+    public List<Point> getIndices() {
         return indices;
     }
 

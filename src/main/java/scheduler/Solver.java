@@ -111,7 +111,7 @@ public abstract class Solver extends Service<List<Schedule>> {
                             Thread.sleep(20);
                             taskThread.resume();
                         } catch (Exception ex) {
-                            System.out.println(ex);
+                            ex.printStackTrace(System.err);
                         }
                     }
                 }, 0, 50);
