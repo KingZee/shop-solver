@@ -13,8 +13,9 @@ jobs:
           ref: github-action
       - name: Install JDK
         run: |
-          sudo apt-get install oracle-java11-set-default-local
+          sudo apt-get install openjdk-11-jdk
           sudo apt-get install maven
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
       - name: Build with Maven
