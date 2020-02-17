@@ -17,4 +17,4 @@ jobs:
       - name: Build with Maven
         run: mvn clean compile
       - name: Run test suite
-        run: mvn test -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headlessmvn
+        run: mvn test -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless
