@@ -18,4 +18,6 @@ jobs:
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
       - name: Build with Maven
-        run: mvn -B package --file pom.xml -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dprism.text=t2k
+        run: |
+        mvn -version
+        mvn -B package --file pom.xml -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dprism.text=t2k
