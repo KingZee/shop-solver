@@ -10,15 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: joss
+          ref: github-action
       - name: Setup Java JDK
-        uses: actions/setup-java@v1.3.0
+        uses: actions/setup-java@v1
         with:
-          java-version: 11
-          java-package: jdk
+          java-version: 11.0.6
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
-      - name: Checkout
-        run: git checkout joss
       - name: Build with Maven
-        run: mvn -B package --file pom.xml -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
+        run: mvn -B package --file pom.xml -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dprism.text=t2k
