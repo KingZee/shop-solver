@@ -15,6 +15,6 @@ jobs:
           java-version: 11
           java-package: jdk+fx
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean compile
       - name: Run test suite
-        run: mvn test -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless
+        run: mvn test -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headlessmvn
