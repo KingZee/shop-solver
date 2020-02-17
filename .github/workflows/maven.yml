@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: github-action
+          ref: joss
       - name: Setup Java JDK
         uses: actions/setup-java@v1.3.0
         with:
