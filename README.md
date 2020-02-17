@@ -1,4 +1,4 @@
-# Shop Solver
+# Shop Solver ![Java CI](https://github.com/KingZee/shop-solver/workflows/Java%20CI/badge.svg)
 > An application to solve scheduling problems written in Java.
 
 ![Demo Animation](https://i.imgur.com/MT5ZHKp.gif)
