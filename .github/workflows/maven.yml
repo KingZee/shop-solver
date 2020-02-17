@@ -12,7 +12,9 @@ jobs:
         with:
           ref: github-action
       - name: Install JDK
-        run: sudo apt-get install openjdk-11-jdk maven
+        run: |
+        sudo apt-get install openjdk-11-jdk
+        sudo apt-get install maven
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
       - name: Build with Maven
