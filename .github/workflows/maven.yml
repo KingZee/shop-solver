@@ -1,0 +1,22 @@
+name: Java CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: github-action
+      - name: Install JDK
+        run: sudo apt-get install openjdk-11-jdk maven
+      - name : Install display library
+        run: sudo apt-get install libpangoft2-1.0
+      - name: Build with Maven
+        run: |
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+          mvn -version
+          mvn -B package --file pom.xml -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dprism.text=t2k
