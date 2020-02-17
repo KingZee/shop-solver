@@ -193,6 +193,12 @@
             <version>5.6.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>jdk-11+26</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <properties>
