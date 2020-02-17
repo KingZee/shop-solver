@@ -13,7 +13,7 @@ jobs:
         uses: actions/setup-java@v1.3.0
         with:
           java-version: 11
-          java-package: jdk+fx
+          java-package: jdk
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
       - name: Build with Maven
