@@ -5,16 +5,14 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
         with:
           ref: github-action
-      - name: Setup Java JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11.0.6
+      - name: Install JDK
+        run: sudo apt-get install openjdk-11-jdk maven
       - name : Install display library
         run: sudo apt-get install libpangoft2-1.0
       - name: Build with Maven
