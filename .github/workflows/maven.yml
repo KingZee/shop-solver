@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: github-action
+          ref: joss
       - name: Install JDK
         run: sudo apt-get install openjdk-11-jdk maven
       - name : Install display library
